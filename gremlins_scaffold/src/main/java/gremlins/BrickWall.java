@@ -9,11 +9,15 @@ import processing.core.PApplet;
 public class BrickWall extends Tile{
     public
         // Sequence
-        // ArrayList< PImage > Sequence;
-        BrickWall(int x, int y, PImage Image){
+   
+        ArrayList< PImage > Sequence;
+        int AnimationIndex;
+        // Pimage image;
+        BrickWall(int x, int y, ArrayList< PImage > Sequence){
             super(x, y);
-            this.Image = Image;
-            // this.Sequence = Sequence;
+            this.Sequence = Sequence;
+            this.Image = Sequence.get(0);
+            this.AnimationIndex = 0;
         }
 
 
@@ -21,7 +25,7 @@ public class BrickWall extends Tile{
             
         }
         public void draw(PApplet app){
-            app.image(this.Image, this.x, this.y);
+            // app.image(this.Sequence.get(4), this.x, this.y);
             
         }
 };

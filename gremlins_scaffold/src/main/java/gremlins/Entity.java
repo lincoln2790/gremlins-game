@@ -1,19 +1,20 @@
 package gremlins;
 import processing.core.PImage;
-import processing.core.PApplet;
-public class Entity extends Tile{
+
+public class Entity {
     public
-        Entity(int x, int y, PImage Image){
-            super(x, y);
-            this.Image = Image;
-        }
+        int x,y;
+        PImage Image = null;
+        Entity(int x,int y){
+            this.x = x;
+            this.y = y;
 
+        }
+        // public void tick(){
 
-        public void tick(){
-            
-        }
-        public void draw(PApplet app){
-            app.image(this.Image, this.x, this.y);
-            
-        }
-};
+        // }
+        // public void draw(){
+
+        // }
+    
+}

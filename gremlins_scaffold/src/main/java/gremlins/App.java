@@ -1,11 +1,8 @@
 package gremlins;
-
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.data.JSONObject;
 import processing.data.JSONArray;
-
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Random;
@@ -13,27 +10,23 @@ import java.io.*;
 import java.io.FileNotFoundException;
 
 public class App extends PApplet {
-
     public static final int WIDTH = 720;
     public static final int HEIGHT = 720;
     public static final int SPRITESIZE = 20;
     public static final int BOTTOMBAR = 60;
-
     public static final int FPS = 60;
-
     public static final Random randomGenerator = new Random();
-
     public String configPath;
-    
-    public PImage brickwall;
-    
-    public PImage stonewall;
-    public PImage exit;
+
+    // public PImage brickwall;
+    // public PImage stonewall;
+    // public PImage exit;
 
     ArrayList<ArrayList<Character>> tileCharArray = new ArrayList< ArrayList<Character> >();
     ArrayList<ArrayList<Tile>> tiles = new ArrayList< ArrayList<Tile> >();
-    ArrayList< PImage> brickwallSequence = new ArrayList<PImage>();
-    // PImage brickwallSequence[];
+    Entity wizard;
+    
+
 
 
 
@@ -59,19 +52,27 @@ public class App extends PApplet {
 // "brickwall_destroyed2.png"
 // "brickwall_destroyed3.png"
         // Load images during setup
-        this.brickwallSequence.add(loadImage(this.getClass().getResource("brickwall_destroyed0.png").getPath().replace("%20", "")));
-        this.brickwallSequence.add(loadImage(this.getClass().getResource("brickwall_destroyed1.png").getPath().replace("%20", "")));
-        this.brickwallSequence.add(loadImage(this.getClass().getResource("brickwall_destroyed2.png").getPath().replace("%20", "")));
-        this.brickwallSequence.add(loadImage(this.getClass().getResource("brickwall_destroyed3.png").getPath().replace("%20", "")));
-        this.stonewall = loadImage(this.getClass().getResource("stonewall.png").getPath().replace("%20", ""));
-        this.brickwall = loadImage(this.getClass().getResource("brickwall.png").getPath().replace("%20", ""));
-        //this.gremlin = loadImage(this.getClass().getResource("gremlin.png").getPath().replace("%20", ""));
-        this.exit = loadImage(this.getClass().getResource("slime.png").getPath().replace("%20", ""));
-        //this.fireball = loadImage(this.getClass().getResource("fireball.png").getPath().replace("%20", ""));
+        ArrayList< PImage> brickwallSequence = new ArrayList<PImage>();
+        ArrayList< PImage> wizardSequence = new ArrayList<PImage>();
+        String brickwallSeqStrs[] = {"brickwall.png", "brickwall_destroyed0.png","brickwall_destroyed1.png","brickwall_destroyed2.png","brickwall_destroyed3.png"};
+        String wizardSeqStrs[] = {"wizard0.png","wizard1.png","wizard2.png","wizard3.png"};
+        for(String s : brickwallSeqStrs){
+            brickwallSequence.add(loadImage(this.getClass().getResource(s).getPath().replace("%20", "")));
+        }
+        for(String s : wizardSeqStrs){
+            wizardSequence.add(loadImage(this.getClass().getResource(s).getPath().replace("%20", "")));
+        }
+
+
+        PImage stonewall = loadImage(this.getClass().getResource("stonewall.png").getPath().replace("%20", ""));
+        PImage gremlin = loadImage(this.getClass().getResource("gremlin.png").getPath().replace("%20", ""));
+        PImage exit = loadImage(this.getClass().getResource("slime.png").getPath().replace("%20", ""));
+        PImage fireball = loadImage(this.getClass().getResource("fireball.png").getPath().replace("%20", ""));
         
         File f = new File("level1.txt");
         try{
             Scanner scan = new Scanner(f);
+            Entity w;
             for(int row = 0; row<33;row++){
                 String line = scan.nextLine();
                 tileCharArray.add(new ArrayList<Character>());
@@ -85,14 +86,15 @@ public class App extends PApplet {
                             t = new StoneWall(col*20,row*20,stonewall);
                             break;
                         case 'B':
-                            t = new BrickWall(col*20,row*20,brickwall);
+                            t = new BrickWall(col*20,row*20, brickwallSequence);
                             break;
                         case 'E':
                             t = new Exit(col*20,row*20,exit);
                             break;
-                        // case 'W':
-                        //     t = new Exit(col*20,row*20,exit);
-                        //     break;
+                            
+                        case 'W':
+                            wizard = new Wizard(col*20,row*20, wizardSequence);
+                            
                         default:
                             t = new Tile(0,0);
                         
@@ -153,7 +155,7 @@ public class App extends PApplet {
 	 */
     public void draw() {
         this.background(192,156,124);
-        this.image(stonewall, 0, 0);
+        this.image(wizard.Image, wizard.x, wizard.y);
         for(int row = 0; row<33;row++){
             for(int col = 0; col<36;col++){
                 // System.out.print(tileCharArray.get(row).get(col));
