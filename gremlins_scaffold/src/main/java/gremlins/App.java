@@ -8,6 +8,7 @@ import java.util.Scanner;
 import java.util.Random;
 import java.io.*;
 import java.io.FileNotFoundException;
+import processing.event.KeyEvent;
 
 public class App extends PApplet {
     public static final int WIDTH = 720;
@@ -20,7 +21,7 @@ public class App extends PApplet {
 
     ArrayList<ArrayList<Character>> tileCharArray = new ArrayList< ArrayList<Character> >();
     ArrayList<ArrayList<Tile>> Tiles = new ArrayList< ArrayList<Tile> >();
-    Entity Wizard;
+    Wizard Wizard;
 
     public App() {
         this.configPath = "config.json";
@@ -130,6 +131,35 @@ public class App extends PApplet {
             }
         }
     }
+
+    // Key event triggered when any key is pressed
+    @Override
+    public void keyPressed(KeyEvent e) {
+        int key = e.getKeyCode();
+        // e.getKey() = UP;
+
+        //System.out.println(key);
+        if (key == LEFT) { //left arrow
+            Wizard.left();
+        } else if (key == RIGHT) { //right arrow
+            Wizard.right();
+        } else if (key == UP) { //a
+            Wizard.up();
+        } else if (key == DOWN) { //d
+            Wizard.down();
+        }
+    }
+
+    //  Key event triggered when any key is released
+    // @Override
+    // public void keyReleased(KeyEvent e) {
+    //     int key = e.getKeyCode();
+    //     if (key == 37 || key == 39) {
+    //         p2.stop();
+    //     } else if (key == 65 || key == 68) {
+    //         p1.stop();
+    //     }
+    // }
 
     public static void main(String[] args) {
         PApplet.main("gremlins.App");

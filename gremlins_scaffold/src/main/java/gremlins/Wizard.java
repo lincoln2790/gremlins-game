@@ -18,7 +18,22 @@ public class Wizard extends Entity{
             this.Image = Sequence.get(0);
             this.AnimationIndex = 0;
         }
-
+        public void left(){
+            Image = Sequence.get(0);
+            x -= 20;
+        }
+        public void right(){
+            Image = Sequence.get(1);
+            x += 20;
+        }
+        public void down(){
+            Image = Sequence.get(3);
+            y += 20;
+        }
+        public void up(){
+            Image = Sequence.get(2);
+            y -= 20;
+        }
         public void tick(){
             
         }
