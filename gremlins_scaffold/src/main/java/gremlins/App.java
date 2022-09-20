@@ -147,15 +147,6 @@ public class App extends PApplet {
                     this.image(t.Image, t.x, t.y);
                 }
                     
-                    // t.Sequence != null & !t.IsActive & t.TileType == 'B' &
-                // }else if( t.Sequence != null &t.AnimationIndex != -1 & t.AnimationIndex <20){
-                //     System.out.println(t.AnimationIndex);
-
-                //     Tiles.get(row).get(col).Image = t.Sequence.get((int)t.AnimationIndex/4);
-                //     Tiles.get(row).get(col).AnimationIndex++;
-
-                //     this.image(t.Image, t.x, t.y);
-                // }  
             }
         }
     }
@@ -164,6 +155,12 @@ public class App extends PApplet {
     @Override
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
+  
+        if(key == 37) Wizard.FacingDirection = 'L';
+        if(key == 39)  Wizard.FacingDirection = 'R';
+        if(key == 38) Wizard.FacingDirection = 'U';
+        if(key == 40)  Wizard.FacingDirection = 'D';
+    
         if(key == 32){
             // int i = 0;
             for(int i = 0; i<5;i++){
@@ -172,6 +169,7 @@ public class App extends PApplet {
                     Fireballs.get(i).x = Wizard.x;
                     Fireballs.get(i).y = Wizard.y;
                     Fireballs.get(i).direction = Wizard.FacingDirection;
+                    Fireballs.get(i).Lifetime = 200;
                     break;
                 }
             }
@@ -183,21 +181,7 @@ public class App extends PApplet {
         }
     }
 
-    //  Key event triggered when any key is released
-    // @Override
-    // public void keyReleased(KeyEvent e) {
-    //     int key = e.getKeyCode();
-    //     if (key == 37 || key == 39) {
-    //         p2.stop();
-    //     } else if (key == 65 || key == 68) {
-    //         p1.stop();
-    //     }
-    // }
     void CheckFireballCollision(Fireball f){
-        // int i = 0;
-        // // Iterator it = 
-        // while(Fireballs.iterator().hasNext() && Fireballs.size() != 0){
-        //     Fireball f = Fireballs.get(i);
         int col = f.x/20;
         int row = f.y/20;
         if(f.x %20 == 0 && f.y%20 == 0){
@@ -210,17 +194,36 @@ public class App extends PApplet {
                 } else if (AboveTile.IsActive && AboveTile.TileType == 'S'){
                     f.IsActive = false;
                 }
-                    // if(AboveTile.IsActive && AboveTile.IsDestructible){
-                    //     // Tiles.get(f.y/20-1).get(f.x/20) = new Tile(f.x,f.y);
-                    //     Tiles.get(f.y/20-1).get(f.x/20).IsActive = false;
-                    //     // Tiles.get(f.y/20-1).get(f.x/20).Image = null;
-                    // }
-
-
-        //         }
-                
-        //     }
-        //     i++;
+            }
+            if(f.direction == 'D'){
+                Tile AboveTile = Tiles.get(row+1).get(col);
+                if(AboveTile.IsActive && AboveTile.TileType == 'B'){
+                    Tiles.get(row+1).get(col).IsActive= false;
+                    Tiles.get(row+1).get(col).AnimationIndex++;
+                    f.IsActive = false;
+                } else if (AboveTile.IsActive && AboveTile.TileType == 'S'){
+                    f.IsActive = false;
+                }
+            }
+            if(f.direction == 'R'){
+                Tile AboveTile = Tiles.get(row).get(col+1);
+                if(AboveTile.IsActive && AboveTile.TileType == 'B'){
+                    Tiles.get(row).get(col+1).IsActive= false;
+                    Tiles.get(row).get(col+1).AnimationIndex++;
+                    f.IsActive = false;
+                } else if (AboveTile.IsActive && AboveTile.TileType == 'S'){
+                    f.IsActive = false;
+                }
+            }
+            if(f.direction == 'L'){
+                Tile AboveTile = Tiles.get(row).get(col-1);
+                if(AboveTile.IsActive && AboveTile.TileType == 'B'){
+                    Tiles.get(row).get(col-1).IsActive= false;
+                    Tiles.get(row).get(col-1).AnimationIndex++;
+                    f.IsActive = false;
+                } else if (AboveTile.IsActive && AboveTile.TileType == 'S'){
+                    f.IsActive = false;
+                }
             }
 
         }

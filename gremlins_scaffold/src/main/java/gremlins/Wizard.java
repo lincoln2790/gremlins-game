@@ -51,6 +51,7 @@ public class Wizard extends Entity{
             int[] target = {x,y};
             int targetRow = x/20;
             int targetCol = y/20;
+
             if (key == 37 && !Tiles.get(targetCol).get(targetRow-1).IsActive) { //left arrow
                 Image = Sequence.get(0);
                 FacingDirection = 'L';

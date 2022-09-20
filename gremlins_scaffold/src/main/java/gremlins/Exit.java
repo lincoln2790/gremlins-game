@@ -6,6 +6,7 @@ public class Exit extends Tile{
         Exit(int x, int y, PImage Image){
             super(x, y);
             this.Image = Image;
+            this.IsActive = true;
         }
 
 
