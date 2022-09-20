@@ -101,13 +101,8 @@ public class App extends PApplet {
 
     }
 
-    /**
-     * Receive key pressed signal from the keyboard.
-    */
-    public void keyPressed(){
+  
 
-    }
-    
     /**
      * Receive key released signal from the keyboard.
     */
@@ -121,7 +116,9 @@ public class App extends PApplet {
 	 */
     public void draw() {
         this.background(192,156,124);
+        this.Wizard.tick();
         this.image(Wizard.Image, Wizard.x, Wizard.y);
+        
         for(int row = 0; row<33;row++){
             for(int col = 0; col<36;col++){
                 Tile t = Tiles.get(row).get(col);
@@ -135,19 +132,11 @@ public class App extends PApplet {
     // Key event triggered when any key is pressed
     @Override
     public void keyPressed(KeyEvent e) {
-        int key = e.getKeyCode();
-        // e.getKey() = UP;
-
-        //System.out.println(key);
-        if (key == LEFT) { //left arrow
-            Wizard.left();
-        } else if (key == RIGHT) { //right arrow
-            Wizard.right();
-        } else if (key == UP) { //a
-            Wizard.up();
-        } else if (key == DOWN) { //d
-            Wizard.down();
+        if(Wizard.target[0] == Wizard.x && Wizard.target[1] == Wizard.y){
+            Wizard.TargetTile(e.getKeyCode());
         }
+        // int key = e.getKeyCode();
+        // Wizard.move(key);
     }
 
     //  Key event triggered when any key is released
