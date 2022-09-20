@@ -10,10 +10,14 @@ public class Wizard extends Entity{
         // Sequence
    
         ArrayList< PImage > Sequence;
+        
         int AnimationIndex;
         int key;
         int Speed = 5;
+        char FacingDirection;
         int[] target= {0,0};
+
+
         // Pimage image;
         Wizard(int x, int y, ArrayList< PImage > Sequence){
             super(x, y);
@@ -43,38 +47,30 @@ public class Wizard extends Entity{
         //     for(int i = 0;i<20;i++)
         //         y--;
         // }
-        public void TargetTile(int key){
+        public void TargetTile(int key, ArrayList<ArrayList<Tile>> Tiles){
             int[] target = {x,y};
-            if (key == 37) { //left arrow
+            int targetRow = x/20;
+            int targetCol = y/20;
+            if (key == 37 && !Tiles.get(targetCol).get(targetRow-1).IsActive) { //left arrow
                 Image = Sequence.get(0);
-                // for(int i = 0;i<20;i++)
+                FacingDirection = 'L';
                 target[0] -=20;
-                    // x--;
-            } else if (key == 39) { //right arrow
+            } else if (key == 39 && !Tiles.get(targetCol).get(targetRow+1).IsActive) { //right arrow
                 Image = Sequence.get(1);
-                // for(int i = 0;i<20;i++)
+                FacingDirection = 'R';
                 target[0] +=20;
-                    // x++;
-            } else if (key == 38) { //a
+            } else if (key == 38 && !Tiles.get(targetCol-1).get(targetRow).IsActive) { //a
                 Image = Sequence.get(2);
-                // for(int i = 0;i<20;i++)
+                FacingDirection = 'U';
                 target[1] -=20;
-                    // y--;
-            } else if (key == 40) { //d
+            } else if (key == 40 && !Tiles.get(targetCol+1).get(targetRow).IsActive) { //d
                 Image = Sequence.get(3);
-                // for(int i = 0;i<20;i++)
+                FacingDirection = 'D';
                 target[1] +=20;
-                    // y++;
             }
             this.target = target;
-            // return target;
-
         }
-        // public void move(int dx,int dy){
-        //     for(int i = 0; i<)
-        //     x += dx;
-        //     y += dy;
-        // }
+
         public void tick(){
             if(!(target[0] == x && target[1] == y)){
                 
@@ -91,10 +87,13 @@ public class Wizard extends Entity{
                     y -= Speed;
                 }
             }
+            
+
 
         }
         public void draw(PApplet app){
             // app.image(this.Sequence.get(4), this.x, this.y);
             
         }
+        
 };

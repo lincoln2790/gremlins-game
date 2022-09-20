@@ -21,6 +21,7 @@ public class App extends PApplet {
 
     ArrayList<ArrayList<Character>> tileCharArray = new ArrayList< ArrayList<Character> >();
     ArrayList<ArrayList<Tile>> Tiles = new ArrayList< ArrayList<Tile> >();
+    ArrayList< Fireball > Fireballs  = new ArrayList<Fireball >();
     Wizard Wizard;
 
     public App() {
@@ -44,7 +45,7 @@ public class App extends PApplet {
         }
 
         ArrayList< PImage> WizardImgs = new ArrayList<PImage>(); 
-        String WizardImgStrs[] = {"wizard0.png","wizard1.png","wizard2.png","wizard3.png"};
+        String WizardImgStrs[] = {"wizard0.png","wizard1.png","wizard2.png","wizard3.png","fireball.png"};
         for(String s : WizardImgStrs){
             WizardImgs.add(loadImage(this.getClass().getResource(s).getPath().replace("%20", "")));
         }
@@ -54,6 +55,9 @@ public class App extends PApplet {
         PImage ExitImg = loadImage(this.getClass().getResource("slime.png").getPath().replace("%20", ""));
         PImage FireballImg = loadImage(this.getClass().getResource("fireball.png").getPath().replace("%20", ""));
         
+        for(int i = 0; i<5;i++){
+            Fireballs.add(new Fireball(0, 0, ' ', FireballImg));
+        }
         File f = new File("level1.txt");
         try{
             Scanner scan = new Scanner(f);
@@ -117,14 +121,41 @@ public class App extends PApplet {
     public void draw() {
         this.background(192,156,124);
         this.Wizard.tick();
+        
         this.image(Wizard.Image, Wizard.x, Wizard.y);
+ 
+        for(Fireball f: Fireballs){
+            if(f.IsActive){
+                CheckFireballCollision(f);
+                f.tick();
+                this.image(f.Image, f.x,f.y);
+            }
+            
+        }
+
+        
+        // System.out.printf();
         
         for(int row = 0; row<33;row++){
             for(int col = 0; col<36;col++){
                 Tile t = Tiles.get(row).get(col);
-                if(t.Image != null){
+                t.tick();
+                // if(t.IsActive){
+                if(( t.Image != null & t.TileType == 'B') | (t.TileType != 'B' & t.IsActive)){
                     this.image(t.Image, t.x, t.y);
-                }         
+                } else if (t.TileType == 'B' & t.IsActive){
+                    this.image(t.Image, t.x, t.y);
+                }
+                    
+                    // t.Sequence != null & !t.IsActive & t.TileType == 'B' &
+                // }else if( t.Sequence != null &t.AnimationIndex != -1 & t.AnimationIndex <20){
+                //     System.out.println(t.AnimationIndex);
+
+                //     Tiles.get(row).get(col).Image = t.Sequence.get((int)t.AnimationIndex/4);
+                //     Tiles.get(row).get(col).AnimationIndex++;
+
+                //     this.image(t.Image, t.x, t.y);
+                // }  
             }
         }
     }
@@ -132,11 +163,24 @@ public class App extends PApplet {
     // Key event triggered when any key is pressed
     @Override
     public void keyPressed(KeyEvent e) {
-        if(Wizard.target[0] == Wizard.x && Wizard.target[1] == Wizard.y){
-            Wizard.TargetTile(e.getKeyCode());
+        int key = e.getKeyCode();
+        if(key == 32){
+            // int i = 0;
+            for(int i = 0; i<5;i++){
+                if(!Fireballs.get(i).IsActive){
+                    Fireballs.get(i).IsActive = true;
+                    Fireballs.get(i).x = Wizard.x;
+                    Fireballs.get(i).y = Wizard.y;
+                    Fireballs.get(i).direction = Wizard.FacingDirection;
+                    break;
+                }
+            }
+
+            // Fireballs.add(new Fireball(Wizard.x, Wizard.y, Wizard.FacingDirection, Wizard.Sequence.get(4)));
         }
-        // int key = e.getKeyCode();
-        // Wizard.move(key);
+        if(Wizard.target[0] == Wizard.x && Wizard.target[1] == Wizard.y){
+            Wizard.TargetTile(e.getKeyCode(), Tiles);
+        }
     }
 
     //  Key event triggered when any key is released
@@ -149,8 +193,40 @@ public class App extends PApplet {
     //         p1.stop();
     //     }
     // }
+    void CheckFireballCollision(Fireball f){
+        // int i = 0;
+        // // Iterator it = 
+        // while(Fireballs.iterator().hasNext() && Fireballs.size() != 0){
+        //     Fireball f = Fireballs.get(i);
+        int col = f.x/20;
+        int row = f.y/20;
+        if(f.x %20 == 0 && f.y%20 == 0){
+            if(f.direction == 'U'){
+                Tile AboveTile = Tiles.get(row-1).get(col);
+                if(AboveTile.IsActive && AboveTile.TileType == 'B'){
+                    Tiles.get(row-1).get(col).IsActive= false;
+                    Tiles.get(row-1).get(col).AnimationIndex++;
+                    f.IsActive = false;
+                } else if (AboveTile.IsActive && AboveTile.TileType == 'S'){
+                    f.IsActive = false;
+                }
+                    // if(AboveTile.IsActive && AboveTile.IsDestructible){
+                    //     // Tiles.get(f.y/20-1).get(f.x/20) = new Tile(f.x,f.y);
+                    //     Tiles.get(f.y/20-1).get(f.x/20).IsActive = false;
+                    //     // Tiles.get(f.y/20-1).get(f.x/20).Image = null;
+                    // }
 
+
+        //         }
+                
+        //     }
+        //     i++;
+            }
+
+        }
+    }
     public static void main(String[] args) {
         PApplet.main("gremlins.App");
     }
 }
+
