@@ -4,6 +4,7 @@ import processing.core.PImage;
 import processing.data.JSONObject;
 import processing.data.JSONArray;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Random;
 import java.io.*;
@@ -19,7 +20,7 @@ public class App extends PApplet {
     public static final Random randomGenerator = new Random();
     public String configPath;
 
-    ArrayList<ArrayList<Character>> tileCharArray = new ArrayList< ArrayList<Character> >();
+    ArrayList<Level> Levels = new ArrayList<Level>();
     ArrayList<ArrayList<Tile>> Tiles = new ArrayList< ArrayList<Tile> >();
     ArrayList< Fireball > Fireballs  = new ArrayList<Fireball >();
     Wizard Wizard;
@@ -35,6 +36,7 @@ public class App extends PApplet {
 
 
 // Load all resources such as images. Initialise the elements such as the player, enemies and map elements.
+    
     public void setup() {
         frameRate(FPS);
         // Load images during setup
@@ -58,12 +60,12 @@ public class App extends PApplet {
         for(int i = 0; i<5;i++){
             Fireballs.add(new Fireball(0, 0, ' ', FireballImg));
         }
+        // File f = new File(Levels.get(0).Layout);
         File f = new File("level1.txt");
         try{
             Scanner scan = new Scanner(f);
             for(int row = 0; row<33;row++){
                 String line = scan.nextLine();
-                tileCharArray.add(new ArrayList<Character>());
                 Tiles.add(new ArrayList<Tile>());
                 for(int col = 0; col<36;col++){
                     Character c = line.charAt(col);
@@ -96,6 +98,19 @@ public class App extends PApplet {
         }
         
         JSONObject conf = loadJSONObject(new File(this.configPath));
+        // ArrayList<String> levelStrings = new ArrayList<String>();
+        
+        for(int i = 0; i< conf.getJSONArray("levels").size();i++){
+            
+            JSONObject level = conf.getJSONArray("levels").getJSONObject(i);
+            String levelStr = level.getString("layout");
+            Float levelWizardCooldown = level.getFloat("wizard_cooldown");
+            Float  levelEnemyCooldown = level.getFloat("enemy_cooldown");
+            Level levelObj = new Level(levelStr,levelWizardCooldown, levelEnemyCooldown);
+            Levels.add(levelObj);
+        }
+
+    }
         // Object j = conf.getJSONArray("levels").get(0);
         // System.out.println(j.getClass());
         // JSONObject j = conf.getJSONArray("levels").get(0);
@@ -103,7 +118,7 @@ public class App extends PApplet {
         
 
 
-    }
+    
 
   
 
