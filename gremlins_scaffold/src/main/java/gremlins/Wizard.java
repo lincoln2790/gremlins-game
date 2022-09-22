@@ -48,28 +48,23 @@ public class Wizard extends Entity{
         //         y--;
         // }
         public void TargetTile(int key, ArrayList<ArrayList<Tile>> Tiles){
-            int[] target = {x,y};
+  
             int targetRow = x/20;
             int targetCol = y/20;
 
             if (key == 37 && !Tiles.get(targetCol).get(targetRow-1).IsActive) { //left arrow
                 Image = Sequence.get(0);
-                FacingDirection = 'L';
                 target[0] -=20;
             } else if (key == 39 && !Tiles.get(targetCol).get(targetRow+1).IsActive) { //right arrow
                 Image = Sequence.get(1);
-                FacingDirection = 'R';
                 target[0] +=20;
             } else if (key == 38 && !Tiles.get(targetCol-1).get(targetRow).IsActive) { //a
                 Image = Sequence.get(2);
-                FacingDirection = 'U';
                 target[1] -=20;
             } else if (key == 40 && !Tiles.get(targetCol+1).get(targetRow).IsActive) { //d
                 Image = Sequence.get(3);
-                FacingDirection = 'D';
                 target[1] +=20;
             }
-            this.target = target;
         }
 
         public void tick(){

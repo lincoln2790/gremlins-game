@@ -23,6 +23,7 @@ public class App extends PApplet {
     ArrayList<Level> Levels = new ArrayList<Level>();
     ArrayList<ArrayList<Tile>> Tiles = new ArrayList< ArrayList<Tile> >();
     ArrayList< Fireball > Fireballs  = new ArrayList<Fireball >();
+    ArrayList< Gremlin > Gremlins  = new ArrayList<Gremlin >();
     Wizard Wizard;
 
     public App() {
@@ -80,14 +81,23 @@ public class App extends PApplet {
                         case 'E':
                             t = new Exit(col*20,row*20,ExitImg);
                             break;
-                        case 'W':
-                            Wizard = new Wizard(col*20,row*20, WizardImgs);
                         default:
                             t = new Tile(col*20,row*20);
-                        
 
                     }
                     Tiles.get(row).add(t);
+                    switch(c){
+                        case 'W':
+                            Wizard = new Wizard(col*20,row*20, WizardImgs);
+                            break;
+                        case 'G':
+                            Gremlins.add(new Gremlin(col*20,row*20, GremlinImg));
+                        default:
+                            // t = new Tile(col*20,row*20);
+                    
+
+                    }
+                    
                 }
             }
 
@@ -144,8 +154,12 @@ public class App extends PApplet {
                 CheckFireballCollision(f);
                 f.tick();
                 this.image(f.Image, f.x,f.y);
+          
             }
-            
+        }
+        for(Gremlin g: Gremlins){
+            this.image(g.Image, g.x,g.y);
+
         }
 
         
@@ -170,12 +184,12 @@ public class App extends PApplet {
     @Override
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
-  
+        
         if(key == 37) Wizard.FacingDirection = 'L';
         if(key == 39)  Wizard.FacingDirection = 'R';
         if(key == 38) Wizard.FacingDirection = 'U';
         if(key == 40)  Wizard.FacingDirection = 'D';
-    
+        Wizard.TargetTile(e.getKeyCode(), Tiles);
         if(key == 32){
             // int i = 0;
             for(int i = 0; i<5;i++){
@@ -189,11 +203,11 @@ public class App extends PApplet {
                 }
             }
 
-            // Fireballs.add(new Fireball(Wizard.x, Wizard.y, Wizard.FacingDirection, Wizard.Sequence.get(4)));
         }
-        if(Wizard.target[0] == Wizard.x && Wizard.target[1] == Wizard.y){
-            Wizard.TargetTile(e.getKeyCode(), Tiles);
-        }
+    }
+    @Override
+    public void keyReleased(KeyEvent e){
+        
     }
 
     void CheckFireballCollision(Fireball f){
