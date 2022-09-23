@@ -1,7 +1,6 @@
 package gremlins;
 import processing.core.PImage;
 
-import java.nio.file.DirectoryIteratorException;
 import java.util.ArrayList;
 
 
@@ -15,7 +14,9 @@ public class Wizard extends Entity{
         int AnimationIndex;
         int key;
         int Speed = 5;
-        char FacingDirection;
+        int xVel;
+        int yVel;
+        int FacingDirection;
         int[] target= {0,0};
 
 
@@ -27,72 +28,41 @@ public class Wizard extends Entity{
             this.AnimationIndex = 0;
             this.target[0] = x;
             this.target[1] = y;
+            this.xVel = 0;
+            this.yVel = 0;
         }
-        // public void left(){
-        //     Image = Sequence.get(0);
-        //     for(int i = 0;i<20;i++)
-        //         x--;
-        // }
-        // public void right(){
-        //     Image = Sequence.get(1);
-        //     for(int i = 0;i<20;i++)
-        //         x++;
-        // }
-        // public void down(){
-        //     Image = Sequence.get(3);
-        //     for(int i = 0;i<20;i++)
-        //         y++;
-        // }
-        // public void up(){
-        //     Image = Sequence.get(2);
-        //     for(int i = 0;i<20;i++)
-        //         y--;
-        // }
-        public void CheckForCollision(ArrayList<ArrayList<Tile>> Tiles){
-  
+
+        public void TargetTile(int key, ArrayList<ArrayList<Tile>> Tiles){
+            int[] target = {x,y};
             int targetRow = x/20;
             int targetCol = y/20;
-            
-            if (FacingDirection == 'L') { //left arrow
-                if(Tiles.get(targetCol-1).get(targetRow).IsActive)  stop();
-                else target[0] = 20*(targetRow-1);
-                
-            } 
-            if (FacingDirection == 'R') { //left arrow
-                if(Tiles.get(targetCol+1).get(targetRow).IsActive)  stop();
-                else target[0] = 20*(targetRow+1);
-                
-            } 
-            if (FacingDirection == 'U') { //left arrow
-                if(Tiles.get(targetCol).get(targetRow-1).IsActive)  stop();
-                else target[1] = 20*(targetCol-1);
-                
-            } 
-            if (FacingDirection == 'D') { //left arrow
-                if(Tiles.get(targetCol+1).get(targetRow).IsActive)  stop();
-                else target[1] = 20*(targetRow+1);
-            } 
+
+            if (key == 37 && !Tiles.get(targetCol).get(targetRow-1).IsActive) { //left arrow
+                Image = Sequence.get(0);
+                FacingDirection = 37;
+                target[0] -=20;
+            } else if (key == 39 && !Tiles.get(targetCol).get(targetRow+1).IsActive) { //right arrow
+                Image = Sequence.get(1);
+                FacingDirection = 39;
+                target[0] +=20;
+            } else if (key == 38 && !Tiles.get(targetCol-1).get(targetRow).IsActive) { //a
+                Image = Sequence.get(2);
+                FacingDirection = 38;
+                target[1] -=20;
+            } else if (key == 40 && !Tiles.get(targetCol+1).get(targetRow).IsActive) { //d
+                Image = Sequence.get(3);
+                FacingDirection = 40;
+                target[1] +=20;
+            }
+            this.target = target;
         }
 
-        public void stop(){
-            // target[0] = x;
-            // target[1] = y;
-        }
         public void tick(){
+            if(!(target[0] == x && target[1] == y)){
+                if(FacingDirection == 37 || FacingDirection == 39) x += xVel;
+                if(FacingDirection == 38 || FacingDirection == 40) y += yVel;
 
-            if(target[0]-x > 0){
-                x += Speed;
-            }
-            else if(target[0]-x <0){
-                x -= Speed;
-            }
-            else if(target[1]-y >0){
-                y += Speed;
-            }
-            else if(target[1]-y <0){
-                y -= Speed;
-            }
-
+            }//
             
 
 

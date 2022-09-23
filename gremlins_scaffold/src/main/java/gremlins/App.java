@@ -23,7 +23,6 @@ public class App extends PApplet {
     ArrayList<Level> Levels = new ArrayList<Level>();
     ArrayList<ArrayList<Tile>> Tiles = new ArrayList< ArrayList<Tile> >();
     ArrayList< Fireball > Fireballs  = new ArrayList<Fireball >();
-    ArrayList< Gremlin > Gremlins  = new ArrayList<Gremlin >();
     Wizard Wizard;
 
     public App() {
@@ -81,23 +80,14 @@ public class App extends PApplet {
                         case 'E':
                             t = new Exit(col*20,row*20,ExitImg);
                             break;
+                        case 'W':
+                            Wizard = new Wizard(col*20,row*20, WizardImgs);
                         default:
                             t = new Tile(col*20,row*20);
+                        
 
                     }
                     Tiles.get(row).add(t);
-                    switch(c){
-                        case 'W':
-                            Wizard = new Wizard(col*20,row*20, WizardImgs);
-                            break;
-                        case 'G':
-                            Gremlins.add(new Gremlin(col*20,row*20, GremlinImg));
-                        default:
-                            // t = new Tile(col*20,row*20);
-                    
-
-                    }
-                    
                 }
             }
 
@@ -154,12 +144,8 @@ public class App extends PApplet {
                 CheckFireballCollision(f);
                 f.tick();
                 this.image(f.Image, f.x,f.y);
-          
             }
-        }
-        for(Gremlin g: Gremlins){
-            this.image(g.Image, g.x,g.y);
-
+            
         }
 
         
@@ -184,33 +170,26 @@ public class App extends PApplet {
     @Override
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
-        
+  
         if(key == 37) {
-            Wizard.FacingDirection = 'L';
-            Wizard.Image = Wizard.Sequence.get(0);
-            Wizard.target[0] = 0;
+            Wizard.FacingDirection = 37;
+            Wizard.xVel = -Wizard.Speed;
         }
-        if(key == 39){
-            Wizard.FacingDirection = 'R';
-            Wizard.Image = Wizard.Sequence.get(1);
-            Wizard.target[0] =720;
-        }  
-        if(key == 38){
-            Wizard.FacingDirection = 'U';
-            Wizard.Image = Wizard.Sequence.get(2);
-            Wizard.target[1] = 0;
-        } 
-        if(key == 40){
-            Wizard.FacingDirection = 'D';
-            Wizard.Image = Wizard.Sequence.get(3);
-            Wizard.target[1] = 720;
-        }  
-        if(Wizard.x%20 == 0 && Wizard.y%20 == 0){
-            Wizard.CheckForCollision(Tiles);
+        if(key == 38) {
+            Wizard.FacingDirection = 38;
+            Wizard.yVel = -Wizard.Speed;
         }
-        
+        if(key == 39) {
+            Wizard.FacingDirection = 39;
+            Wizard.xVel = Wizard.Speed;
+        }
+        if(key == 40) {
+            Wizard.FacingDirection = 40;
+            Wizard.yVel = Wizard.Speed;
+        }
 
         if(key == 32){
+            // int i = 0;
             for(int i = 0; i<5;i++){
                 if(!Fireballs.get(i).IsActive){
                     Fireballs.get(i).IsActive = true;
@@ -222,21 +201,18 @@ public class App extends PApplet {
                 }
             }
 
+            // Fireballs.add(new Fireball(Wizard.x, Wizard.y, Wizard.FacingDirection, Wizard.Sequence.get(4)));
         }
-    }
-    @Override
-    public void keyReleased(KeyEvent e){
-        if(Wizard.FacingDirection == 'L'){
-
+        if(Wizard.target[0] == Wizard.x && Wizard.target[1] == Wizard.y){
+            Wizard.TargetTile(e.getKeyCode(), Tiles);
         }
-        
     }
 
     void CheckFireballCollision(Fireball f){
         int col = f.x/20;
         int row = f.y/20;
         if(f.x %20 == 0 && f.y%20 == 0){
-            if(f.direction == 'U'){
+            if(f.direction == 38){
                 Tile AboveTile = Tiles.get(row-1).get(col);
                 if(AboveTile.IsActive && AboveTile.TileType == 'B'){
                     Tiles.get(row-1).get(col).IsActive= false;
@@ -246,7 +222,7 @@ public class App extends PApplet {
                     f.IsActive = false;
                 }
             }
-            if(f.direction == 'D'){
+            if(f.direction == 40){
                 Tile AboveTile = Tiles.get(row+1).get(col);
                 if(AboveTile.IsActive && AboveTile.TileType == 'B'){
                     Tiles.get(row+1).get(col).IsActive= false;
@@ -256,7 +232,7 @@ public class App extends PApplet {
                     f.IsActive = false;
                 }
             }
-            if(f.direction == 'R'){
+            if(f.direction == 39){
                 Tile AboveTile = Tiles.get(row).get(col+1);
                 if(AboveTile.IsActive && AboveTile.TileType == 'B'){
                     Tiles.get(row).get(col+1).IsActive= false;
@@ -266,7 +242,7 @@ public class App extends PApplet {
                     f.IsActive = false;
                 }
             }
-            if(f.direction == 'L'){
+            if(f.direction == 37){
                 Tile AboveTile = Tiles.get(row).get(col-1);
                 if(AboveTile.IsActive && AboveTile.TileType == 'B'){
                     Tiles.get(row).get(col-1).IsActive= false;

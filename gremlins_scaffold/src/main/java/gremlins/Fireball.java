@@ -8,7 +8,7 @@ import processing.core.PApplet;
 public class Fireball extends Entity{
     public
     int Velocity = 4;
-    char direction;
+    int direction;
     boolean IsActive;
     int Lifetime;
     Fireball(int x, int y, char direction, PImage image){
@@ -24,16 +24,16 @@ public class Fireball extends Entity{
         }
         Lifetime -= 1;
         switch(direction){
-            case 'U':
+            case 38:
             y-= Velocity;
             break;
-            case 'D':
+            case 40:
             y += Velocity;
             break;
-            case 'L':
+            case 37:
             x -= Velocity;
             break;
-            case 'R':
+            case 39:
             x += Velocity;
             break;
         }
