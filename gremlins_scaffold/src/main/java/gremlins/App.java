@@ -185,13 +185,32 @@ public class App extends PApplet {
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         
-        if(key == 37) Wizard.FacingDirection = 'L';
-        if(key == 39)  Wizard.FacingDirection = 'R';
-        if(key == 38) Wizard.FacingDirection = 'U';
-        if(key == 40)  Wizard.FacingDirection = 'D';
-        Wizard.TargetTile(e.getKeyCode(), Tiles);
+        if(key == 37) {
+            Wizard.FacingDirection = 'L';
+            Wizard.Image = Wizard.Sequence.get(0);
+            Wizard.target[0] = 0;
+        }
+        if(key == 39){
+            Wizard.FacingDirection = 'R';
+            Wizard.Image = Wizard.Sequence.get(1);
+            Wizard.target[0] =720;
+        }  
+        if(key == 38){
+            Wizard.FacingDirection = 'U';
+            Wizard.Image = Wizard.Sequence.get(2);
+            Wizard.target[1] = 0;
+        } 
+        if(key == 40){
+            Wizard.FacingDirection = 'D';
+            Wizard.Image = Wizard.Sequence.get(3);
+            Wizard.target[1] = 720;
+        }  
+        if(Wizard.x%20 == 0 && Wizard.y%20 == 0){
+            Wizard.CheckForCollision(Tiles);
+        }
+        
+
         if(key == 32){
-            // int i = 0;
             for(int i = 0; i<5;i++){
                 if(!Fireballs.get(i).IsActive){
                     Fireballs.get(i).IsActive = true;
@@ -207,6 +226,9 @@ public class App extends PApplet {
     }
     @Override
     public void keyReleased(KeyEvent e){
+        if(Wizard.FacingDirection == 'L'){
+
+        }
         
     }
 

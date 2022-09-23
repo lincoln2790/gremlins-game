@@ -1,6 +1,7 @@
 package gremlins;
 import processing.core.PImage;
 
+import java.nio.file.DirectoryIteratorException;
 import java.util.ArrayList;
 
 
@@ -47,42 +48,51 @@ public class Wizard extends Entity{
         //     for(int i = 0;i<20;i++)
         //         y--;
         // }
-        public void TargetTile(int key, ArrayList<ArrayList<Tile>> Tiles){
+        public void CheckForCollision(ArrayList<ArrayList<Tile>> Tiles){
   
             int targetRow = x/20;
             int targetCol = y/20;
-
-            if (key == 37 && !Tiles.get(targetCol).get(targetRow-1).IsActive) { //left arrow
-                Image = Sequence.get(0);
-                target[0] -=20;
-            } else if (key == 39 && !Tiles.get(targetCol).get(targetRow+1).IsActive) { //right arrow
-                Image = Sequence.get(1);
-                target[0] +=20;
-            } else if (key == 38 && !Tiles.get(targetCol-1).get(targetRow).IsActive) { //a
-                Image = Sequence.get(2);
-                target[1] -=20;
-            } else if (key == 40 && !Tiles.get(targetCol+1).get(targetRow).IsActive) { //d
-                Image = Sequence.get(3);
-                target[1] +=20;
-            }
+            
+            if (FacingDirection == 'L') { //left arrow
+                if(Tiles.get(targetCol-1).get(targetRow).IsActive)  stop();
+                else target[0] = 20*(targetRow-1);
+                
+            } 
+            if (FacingDirection == 'R') { //left arrow
+                if(Tiles.get(targetCol+1).get(targetRow).IsActive)  stop();
+                else target[0] = 20*(targetRow+1);
+                
+            } 
+            if (FacingDirection == 'U') { //left arrow
+                if(Tiles.get(targetCol).get(targetRow-1).IsActive)  stop();
+                else target[1] = 20*(targetCol-1);
+                
+            } 
+            if (FacingDirection == 'D') { //left arrow
+                if(Tiles.get(targetCol+1).get(targetRow).IsActive)  stop();
+                else target[1] = 20*(targetRow+1);
+            } 
         }
 
+        public void stop(){
+            // target[0] = x;
+            // target[1] = y;
+        }
         public void tick(){
-            if(!(target[0] == x && target[1] == y)){
-                
-                if(target[0]-x >0){
-                    x += Speed;
-                }
-                else if(target[0]-x <0){
-                    x -= Speed;
-                }
-                else if(target[1]-y >0){
-                    y += Speed;
-                }
-                else if(target[1]-y <0){
-                    y -= Speed;
-                }
+
+            if(target[0]-x > 0){
+                x += Speed;
             }
+            else if(target[0]-x <0){
+                x -= Speed;
+            }
+            else if(target[1]-y >0){
+                y += Speed;
+            }
+            else if(target[1]-y <0){
+                y -= Speed;
+            }
+
             
 
 
