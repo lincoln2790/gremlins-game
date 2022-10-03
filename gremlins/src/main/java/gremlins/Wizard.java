@@ -1,22 +1,18 @@
 package gremlins;
-import processing.core.PApplet;
 import processing.core.PImage;
-import processing.data.JSONObject;
-import processing.data.JSONArray;
+
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Scanner;
-import java.util.Random;
-import java.io.*;
-import java.io.FileNotFoundException;
-import processing.event.KeyEvent;
+
 
 public class Wizard extends Entity {
     public
         ArrayList< PImage > Sequence;
-        PImage img = loadImage("../resources/wizard0.png");
-        Wizard(int x, int y, ArrayList<PImage> images){
+        int ImageIndex;
+        // PImage img = loadImage("../resources/wizard0.png");
+        Wizard(int x, int y, ArrayList<PImage> Sequence){
             super(x, y);
+            this.Sequence = Sequence;
+            this.ImageIndex = 0;
 
         }
 
