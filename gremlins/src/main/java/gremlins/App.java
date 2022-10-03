@@ -20,12 +20,14 @@ public class App extends PApplet {
     public static final int NUM_ROWS = 33;
     public static final int NUM_COLS = 36;
     public int keyCode;
+    public int keysPressed[] = {0,0,0,0};
 
     public static final Random randomGenerator = new Random();
     public String configPath;
 
     ArrayList<Level> Levels = new ArrayList<Level>();
-    int currentLevel = 1;
+    int currentLevel = 0;
+    
 
     public App() {
         this.configPath = "config.json";
@@ -36,8 +38,6 @@ public class App extends PApplet {
     }
 
     public void setup() {
-        
-
         frameRate(FPS);
         // Loading BrickWall animation images
         ArrayList< PImage> BrickwallImgs = new ArrayList<PImage>();
@@ -82,6 +82,7 @@ public class App extends PApplet {
                     for(int col = 0; col<NUM_COLS;col++){
                         Character c = line.charAt(col);
                         Tile t =new Tile(col*20,row*20);
+                        Level l = Levels.get(currentLevel);
                         switch(c){
                             case 'X':
                                 t = new StoneWall(col*20,row*20,StonewallImg);
@@ -93,11 +94,11 @@ public class App extends PApplet {
                                 t = new Exit(col*20,row*20,ExitImg);
                                 break;
                             case 'W':
-                                Wizard w = new Wizard(col*20,row*20, WizardImgs);
+                                Wizard w = new Wizard(col*20,row*20, WizardImgs, l.WizardCooldown);
                                 Levels.get(i).Wizard = w;
                                 break;
                             case 'G':
-                                Gremlin g = new Gremlin(col*20,row*20, GremlinImg);
+                                Gremlin g = new Gremlin(col*20,row*20, GremlinImg, l.EnemyCooldown);
                                 Levels.get(i).Gremlins.add(g);
                                 break;
                         }
@@ -118,10 +119,11 @@ public class App extends PApplet {
     public void draw() {
 
         this.background(192,156,124);
-        Level l = Levels.get(currentLevel-1);
+        Level l = Levels.get(currentLevel);
 
         
-        System.out.printf("%d, %d \n", this.keyCode,l.Wizard.ArrowKey);
+        System.out.printf("%d \n",l.Wizard.cooldown);
+
         this.image(l.Wizard.Image, l.Wizard.x, l.Wizard.y);
 
         for(int row = 0; row<NUM_ROWS;row++){
@@ -137,17 +139,17 @@ public class App extends PApplet {
                     
             }
         }
-        for(int i = 0; i< l.Gremlins.size(); i++){
-            this.image(l.Gremlins.get(i).Image, l.Gremlins.get(i).x, l.Gremlins.get(i).y);
+        for(Gremlin g: l.Gremlins){
+            this.image(g.Image,g.x, g.y);
+            g.tick(CheckEntityCollision(g));
+
         }
         for(Fireball f: l.Fireballs){
             if(f.isAlive){
                 this.image(f.Image, f.x, f.y);
                 
                 for(int i = 0; i<f.VELOCITY;i++){
-                    if(CheckFireBallCollision()){
-                        l.Wizard.tick(CheckEntityCollision());
-                    }
+                    CheckFireBallCollision();
                     f.tick();
                 }
                 
@@ -155,52 +157,69 @@ public class App extends PApplet {
             }
             
         }
-        l.Wizard.tick(CheckEntityCollision());
+        l.Wizard.tick(CheckEntityCollision(l.Wizard));
     }    // Key event triggered when any key is pressed
 
     public void keyPressed(KeyEvent e) {
         keyCode = e.getKeyCode();
         
-        Level l =  Levels.get(currentLevel-1);
+        Level l =  Levels.get(currentLevel);
         if(keyCode >=37 && keyCode<=40){
+            keysPressed[keyCode-37] = 1;
             l.Wizard.ArrowKeyQueue = e.getKeyCode();
+            l.Wizard.isKeyPressed = true;
             if(!l.Wizard.isMoving){
-                l.Wizard.ArrowKey = keyCode;
-                l.Wizard.isKeyPressed = true;
+                l.Wizard.Direction = keyCode;
+                
             }
         }
         if(l.Wizard.isGridLocked()){
-            l.Wizard.ArrowKey = l.Wizard.ArrowKeyQueue;
+            l.Wizard.Direction = l.Wizard.ArrowKeyQueue;
         }
         if(keyCode == 32){
-            for(int i = 0; i<5;i++){
-                if(!l.Fireballs.get(i).isAlive){
-                    l.Fireballs.get(i).isAlive = true;
-                    l.Fireballs.get(i).x = l.Wizard.x;
-                    l.Fireballs.get(i).y = l.Wizard.y;
-                    l.Fireballs.get(i).direction = l.Wizard.ArrowKey;
-                    l.Fireballs.get(i).Lifetime = 2000;
-                    break;
+            if(l.Wizard.cooldownTimer <= 0){
+                for(int i = 0; i<5;i++){
+                    if(!l.Fireballs.get(i).isAlive){
+                        l.Fireballs.get(i).isAlive = true;
+                        l.Fireballs.get(i).x = l.Wizard.x;
+                        l.Fireballs.get(i).y = l.Wizard.y;
+                        l.Fireballs.get(i).direction = l.Wizard.Direction;
+                        l.Fireballs.get(i).Lifetime = 2000;
+                        l.Wizard.cooldownTimer = l.Wizard.cooldown;
+                        break;
+                    }
                 }
             }
+            
 
         }
     }
-    public void keyReleased(){
-        if(!((keyCode >=37 && keyCode<=40) || keyCode == 32)){
-            Levels.get(currentLevel-1).Wizard.isKeyPressed = false;
+    public void keyReleased(KeyEvent e){
+        keyCode = e.getKeyCode();
+        if(keyCode >=37 && keyCode<=40){
+            keysPressed[keyCode-37] = 0;
+        }
+        int totalKeysPressed = 0;
+        for(int i = 0;i<4;i++){
+            totalKeysPressed+=keysPressed[i];
+        }
+        if(totalKeysPressed ==0){
+            Levels.get(currentLevel).Wizard.isKeyPressed = false;
         }
         
+        // if(keyCode == 32){
 
-        
-    
+        // } else if(keyCode >=37 && keyCode<=40){
+        //     Levels.get(currentLevel-1).Wizard.isKeyPressed = false;
+        // }
+
     }
    
     public static void main(String[] args) {
         PApplet.main("gremlins.App");
     }
-    public boolean CheckFireBallCollision(){
-        Level l = Levels.get(currentLevel-1);
+    public void CheckFireBallCollision(){
+        Level l = Levels.get(currentLevel);
         boolean Collision = false;
         outerloop:
         for(int row = 0;row<NUM_ROWS;row++){
@@ -235,22 +254,40 @@ public class App extends PApplet {
                 }
             }
         }
-        return Collision;
+        
+        Collision = false;
+        outerloop:
+        for(Gremlin g: l.Gremlins){
+            for(Fireball f:l.Fireballs){
+                if(f.direction == LEFT && f.x == g.x+20 && f.y == g.y) Collision = true;
+                if(f.direction == UP && f.x == g.x && f.y == g.y+20) Collision = true;
+                if(f.direction == RIGHT && f.x == g.x-20 && f.y == g.y) Collision = true;
+                if(f.direction == DOWN && f.x == g.x && f.y == g.y-20) Collision = true;
+                if(f.x == g.x && f.y == g.y) Collision = true;
+                if(Collision){
+                    g.isAlive = false;
+                    f.isAlive= false;
+                    break outerloop;
+                }
+            }
+            
+        }
+        // return Collision;
         
     }
-    boolean CheckEntityCollision(){
-        Level l = Levels.get(currentLevel-1);
+    boolean CheckEntityCollision(Entity e){
+        Level l = Levels.get(currentLevel);
         boolean Collision = false;
-        if(l.Wizard.isGridLocked()){
+        if(e.isGridLocked()){
             outerloop:
             for(int row = 0;row<NUM_ROWS;row++){
                 for(int col = 0;col<NUM_COLS;col++){
                     Tile t = l.Tiles.get(row).get(col);
                     if(t.IsActive){
-                        if(l.Wizard.ArrowKey == LEFT && l.Wizard.x == t.x+20 && l.Wizard.y == t.y) Collision = true;
-                        if(l.Wizard.ArrowKey  == UP && l.Wizard.x == t.x && l.Wizard.y == t.y+20) Collision = true;
-                        if(l.Wizard.ArrowKey  == RIGHT && l.Wizard.x == t.x-20 && l.Wizard.y == t.y) Collision = true;
-                        if(l.Wizard.ArrowKey  == DOWN && l.Wizard.x == t.x && l.Wizard.y == t.y-20) Collision = true;
+                        if(e.Direction == LEFT && e.x == t.x+20 && e.y == t.y) Collision = true;
+                        if(e.Direction  == UP && e.x == t.x && e.y == t.y+20) Collision = true;
+                        if(e.Direction  == RIGHT && e.x == t.x-20 && e.y == t.y) Collision = true;
+                        if(e.Direction  == DOWN && e.x == t.x && e.y == t.y-20) Collision = true;
                     
                     }
                     if(Collision){
@@ -265,5 +302,6 @@ public class App extends PApplet {
         return Collision;
 
     }
+    
 }
 

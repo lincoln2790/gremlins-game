@@ -12,6 +12,8 @@ public class Entity {
         static final int RIGHT = 39;
         static final int DOWN = 40;
         int x, y;
+        int Direction;
+        int cooldown, cooldownTimer;
         PImage Image;
         boolean isAlive;
         Map<Integer, ArrayList<Integer>> h = new HashMap<Integer, ArrayList<Integer>>();

@@ -16,34 +16,38 @@ public class Wizard extends Entity {
         ArrayList< PImage > Sequence;
         boolean isMoving;
         boolean isKeyPressed;
-        int ArrowKey,ArrowKeyQueue;
+        int ArrowKeyQueue;
+        
+        
 
-        Wizard(int x, int y, ArrayList<PImage> Sequence){
+        Wizard(int x, int y, ArrayList<PImage> Sequence, float cooldown){
             super(x, y);
             this.Sequence = Sequence;
             this.Image = Sequence.get(0);
             this.ArrowKeyQueue = 39;
-            this.ArrowKey = 37;
+            this.Direction = 37;
 
             this.isMoving = false;
             this.isKeyPressed = false;
             this.isAlive = true;
+            this.cooldown = (int)(cooldown*100);
+            this.cooldownTimer = 0;
 
         }
         void tick(boolean CheckCollision){
-            
+            cooldownTimer--;
             if(isGridLocked()){
-                Image = Sequence.get(ArrowKey-37);
+                Image = Sequence.get(Direction-37);
                 if(!CheckCollision){
                     if(isKeyPressed){
-                        ArrowKey = ArrowKeyQueue;
+                        Direction = ArrowKeyQueue;
                         move();
                         isMoving = true;
                     }else {
                         isMoving = false;
                     }
                 }
-            }else {
+            } else {
                 move();
                 isMoving = true;
             }
@@ -53,15 +57,18 @@ public class Wizard extends Entity {
 
         
         void move(){
-            x += VELOCITY*h.get(ArrowKey).get(0);
-            y += VELOCITY*h.get(ArrowKey).get(1);
+            if(Direction != 0){
+                x += VELOCITY*h.get(Direction).get(0);
+                y += VELOCITY*h.get(Direction).get(1);
 
+            }
+            
         }
         boolean isGridLocked(){
             return (x%20 == 0 && y%20 == 0);
         }
         boolean ArrowKeyPressed(){
-            return (ArrowKey >=37 && ArrowKey<=40);
+            return (Direction >=37 && Direction<=40);
         }
 
 }
