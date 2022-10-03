@@ -58,9 +58,7 @@ public class App extends PApplet {
         PImage ExitImg = loadImage(this.getClass().getResource("slime.png").getPath().replace("%20", ""));
         PImage FireballImg = loadImage(this.getClass().getResource("fireball.png").getPath().replace("%20", ""));
         
-        // for(int i = 0; i<5;i++){
-        //     Fireballs.add(new Fireball(0, 0, ' ', FireballImg));
-        // }
+        
         JSONObject conf = loadJSONObject(new File(this.configPath));
  
         for(int i = 0; i< conf.getJSONArray("levels").size();i++){
@@ -69,6 +67,9 @@ public class App extends PApplet {
             Float levelWizardCooldown = level.getFloat("wizard_cooldown");
             Float  levelEnemyCooldown = level.getFloat("enemy_cooldown");
             Level levelObj = new Level(levelStr,levelWizardCooldown, levelEnemyCooldown);
+            for(int f = 0; f< Level.MAX_FIREBALLS;f++){
+                levelObj.Fireballs.add(new Fireball(0, 0, FireballImg));
+            }
             File f = new File(levelStr);
             Levels.add(levelObj);
             try{
@@ -117,8 +118,8 @@ public class App extends PApplet {
 
         this.background(192,156,124);
         Level l = Levels.get(currentLevel-1);
-        l.Wizard.tick(keyCode);
-        this.image(l.Wizard.Sequence.get(l.Wizard.ImageIndex), l.Wizard.x, l.Wizard.y);
+        l.Wizard.tick();
+        this.image(l.Wizard.Image, l.Wizard.x, l.Wizard.y);
 
         for(int row = 0; row<NUM_ROWS;row++){
             for(int col = 0; col<NUM_COLS;col++){
@@ -136,13 +137,39 @@ public class App extends PApplet {
         for(int i = 0; i< l.Gremlins.size(); i++){
             this.image(l.Gremlins.get(i).Image, l.Gremlins.get(i).x, l.Gremlins.get(i).y);
         }
+        for(Fireball f: l.Fireballs){
+            if(f.isAlive){
+                this.image(f.Image, f.x, f.y);
+                
+                f.tick();
+            }
+            
+        }
     }    // Key event triggered when any key is pressed
-    @Override
+
     public void keyPressed(KeyEvent e) {
-     
+        Level l =  Levels.get(currentLevel-1);
+        if(keyCode >=37 && keyCode<=40 && !l.Wizard.isMoving){
+            l.Wizard.ArrowKey = keyCode;
+            l.Wizard.isKeyPressed = true;
+        }
+        if(keyCode == 32){
+            for(int i = 0; i<5;i++){
+                if(!l.Fireballs.get(i).isAlive){
+                    l.Fireballs.get(i).isAlive = true;
+                    l.Fireballs.get(i).x = l.Wizard.x;
+                    l.Fireballs.get(i).y = l.Wizard.y;
+                    l.Fireballs.get(i).direction = l.Wizard.ArrowKey;
+                    l.Fireballs.get(i).Lifetime = 20;
+                    break;
+                }
+            }
+
+        }
     }
     public void keyReleased(){
-      
+        Levels.get(currentLevel-1).Wizard.isKeyPressed = false;
+    
     }
    
     public static void main(String[] args) {

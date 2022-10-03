@@ -9,36 +9,50 @@ import java.util.Map;
 
 
 public class Wizard extends Entity {
-    // public
-    public static final int LEFT = 37;
-    public static final int UP = 38;
-    public static final int RIGHT = 39;
-    public static final int DOWN = 40;
-    Map<Integer, ArrayList<Integer>> h = new HashMap<Integer, ArrayList<Integer>>();
+    public
+        
+        static final int VELOCITY = 4;
+       
         ArrayList< PImage > Sequence;
-        int ImageIndex;
-        // PImage img = loadImage("../resources/wizard0.png");
+        boolean isMoving;
+        boolean isKeyPressed;
+        int ArrowKey;
+
         Wizard(int x, int y, ArrayList<PImage> Sequence){
             super(x, y);
             this.Sequence = Sequence;
-            this.ImageIndex = 0;
-            ArrayList<Integer> L = new ArrayList<Integer>(Arrays.asList(-20,0));
-            ArrayList<Integer> U = new ArrayList<Integer>(Arrays.asList(0,-20));
-            ArrayList<Integer> R = new ArrayList<Integer>(Arrays.asList(20,0));
-            ArrayList<Integer> D = new ArrayList<Integer>(Arrays.asList(0,20));
-            h.put(LEFT,L);
-            h.put(UP,U);
-            h.put(RIGHT,R);
-            h.put(DOWN,D);
+            this.Image = Sequence.get(0);
+
+            this.ArrowKey = 0;
+            this.isMoving = false;
+            this.isKeyPressed = false;
+            this.isAlive = true;
 
         }
-        public void tick(int keyCode){
-            if(keyCode >= 36 && keyCode <=40){
-                x += h.get(keyCode).get(0);
-                y += h.get(keyCode).get(1);
+        void tick(){
+            if(isGridLocked()){
+                if(isKeyPressed){
+                    move();
+                    isMoving = true;
+                }else {
+                    isMoving = false;
+                }
+            }else {
+                move();
+                isMoving = true;
             }
-            
 
+        }
+        void move(){
+            x += VELOCITY*h.get(ArrowKey).get(0);
+            y += VELOCITY*h.get(ArrowKey).get(1);
+
+        }
+        boolean isGridLocked(){
+            return (x%20 == 0 && y%20 == 0);
+        }
+        boolean ArrowKeyPressed(){
+            return (ArrowKey >=37 && ArrowKey<=40);
         }
 
 }
