@@ -15,6 +15,7 @@ public class Gremlin extends Entity {
             this.Image = Image;
             this.cooldown = (int)cooldown;
             this.Direction = rand.nextInt(4)+37;
+            this.isAlive = true;
         }
         public void tick(boolean CheckCollision){
             if(!CheckCollision){

@@ -140,8 +140,11 @@ public class App extends PApplet {
             }
         }
         for(Gremlin g: l.Gremlins){
-            this.image(g.Image,g.x, g.y);
-            g.tick(CheckEntityCollision(g));
+            if(g.isAlive){
+                this.image(g.Image,g.x, g.y);
+                g.tick(CheckEntityCollision(g));
+            }
+            
 
         }
         for(Fireball f: l.Fireballs){
