@@ -16,33 +16,42 @@ public class Wizard extends Entity {
         ArrayList< PImage > Sequence;
         boolean isMoving;
         boolean isKeyPressed;
-        int ArrowKey;
+        int ArrowKey,ArrowKeyQueue;
 
         Wizard(int x, int y, ArrayList<PImage> Sequence){
             super(x, y);
             this.Sequence = Sequence;
             this.Image = Sequence.get(0);
+            this.ArrowKeyQueue = 39;
+            this.ArrowKey = 37;
 
-            this.ArrowKey = 0;
             this.isMoving = false;
             this.isKeyPressed = false;
             this.isAlive = true;
 
         }
-        void tick(){
+        void tick(boolean CheckCollision){
+            
             if(isGridLocked()){
-                if(isKeyPressed){
-                    move();
-                    isMoving = true;
-                }else {
-                    isMoving = false;
+                Image = Sequence.get(ArrowKey-37);
+                if(!CheckCollision){
+                    if(isKeyPressed){
+                        ArrowKey = ArrowKeyQueue;
+                        move();
+                        isMoving = true;
+                    }else {
+                        isMoving = false;
+                    }
                 }
             }else {
                 move();
                 isMoving = true;
             }
-
         }
+            // }
+            
+
+        
         void move(){
             x += VELOCITY*h.get(ArrowKey).get(0);
             y += VELOCITY*h.get(ArrowKey).get(1);

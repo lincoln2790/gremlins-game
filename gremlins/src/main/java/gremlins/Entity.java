@@ -29,4 +29,7 @@ public class Entity {
             h.put(RIGHT,R);
             h.put(DOWN,D);
         }
+        boolean isGridLocked(){
+            return (x%20 == 0 && y%20 == 0);
+        }
 }
