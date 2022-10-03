@@ -2,10 +2,19 @@ package gremlins;
 import processing.core.PImage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+// import java.util.Map.entry; 
 
 
 public class Wizard extends Entity {
-    public
+    // public
+    public static final int LEFT = 37;
+    public static final int UP = 38;
+    public static final int RIGHT = 39;
+    public static final int DOWN = 40;
+    Map<Integer, ArrayList<Integer>> h = new HashMap<Integer, ArrayList<Integer>>();
         ArrayList< PImage > Sequence;
         int ImageIndex;
         // PImage img = loadImage("../resources/wizard0.png");
@@ -13,6 +22,22 @@ public class Wizard extends Entity {
             super(x, y);
             this.Sequence = Sequence;
             this.ImageIndex = 0;
+            ArrayList<Integer> L = new ArrayList<Integer>(Arrays.asList(-20,0));
+            ArrayList<Integer> U = new ArrayList<Integer>(Arrays.asList(0,-20));
+            ArrayList<Integer> R = new ArrayList<Integer>(Arrays.asList(20,0));
+            ArrayList<Integer> D = new ArrayList<Integer>(Arrays.asList(0,20));
+            h.put(LEFT,L);
+            h.put(UP,U);
+            h.put(RIGHT,R);
+            h.put(DOWN,D);
+
+        }
+        public void tick(int keyCode){
+            if(keyCode >= 36 && keyCode <=40){
+                x += h.get(keyCode).get(0);
+                y += h.get(keyCode).get(1);
+            }
+            
 
         }
 

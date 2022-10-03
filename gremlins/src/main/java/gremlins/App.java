@@ -117,7 +117,7 @@ public class App extends PApplet {
 
         this.background(192,156,124);
         Level l = Levels.get(currentLevel-1);
-        
+        l.Wizard.tick(keyCode);
         this.image(l.Wizard.Sequence.get(l.Wizard.ImageIndex), l.Wizard.x, l.Wizard.y);
 
         for(int row = 0; row<NUM_ROWS;row++){
@@ -134,9 +134,7 @@ public class App extends PApplet {
             }
         }
         for(int i = 0; i< l.Gremlins.size(); i++){
-            // if( l.Gremlins.get(i).Image != null){
             this.image(l.Gremlins.get(i).Image, l.Gremlins.get(i).x, l.Gremlins.get(i).y);
-            // }
         }
     }    // Key event triggered when any key is pressed
     @Override

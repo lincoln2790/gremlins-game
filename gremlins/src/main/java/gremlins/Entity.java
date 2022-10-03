@@ -6,9 +6,11 @@ public class Entity {
     public 
         int x, y;
         PImage Image;
+        boolean isAlive;
         Entity(int x,int y){
             this.x=x;
             this.y = y;
             this.Image = null;
+            this.isAlive = true;
         }
 }
