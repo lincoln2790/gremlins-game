@@ -17,18 +17,20 @@ public class BrickWall extends Tile{
             this.AnimationIndex = 0;
             this.Image = Sequence.get(0);
             this.IsActive = true;
-            this.IsDestructible = true;
             this.TileType = 'B';
         }
         
         @Override
         public void tick(){
-            if(!IsActive & AnimationIndex <20){
+            if(!IsActive && AnimationIndex < 20){
                 Image = Sequence.get((int)AnimationIndex/4);
                 AnimationIndex++;
             }
-            else if(AnimationIndex >= 20){
+            else if(!IsActive && AnimationIndex >= 20){
                 Image = null;
+                
+            } else if(IsActive){
+                Image = Sequence.get(0);
             }
         }
 

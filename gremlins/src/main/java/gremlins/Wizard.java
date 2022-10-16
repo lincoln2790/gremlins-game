@@ -17,7 +17,8 @@ public class Wizard extends Entity {
         boolean isMoving;
         boolean isKeyPressed;
         int ArrowKeyQueue;
-        
+        char type = 'W';
+        int Lives;
         
 
         Wizard(int x, int y, ArrayList<PImage> Sequence, float cooldown){
@@ -26,19 +27,20 @@ public class Wizard extends Entity {
             this.Image = Sequence.get(0);
             this.ArrowKeyQueue = 39;
             this.Direction = 37;
+            this.Lives = 3;
 
             this.isMoving = false;
             this.isKeyPressed = false;
-            this.isAlive = true;
+            this.IsAlive = true;
             this.cooldown = (int)(cooldown*100);
             this.cooldownTimer = 0;
 
         }
-        void tick(boolean CheckCollision){
+        void tick(boolean CheckWallCollision){
             cooldownTimer--;
             if(isGridLocked()){
                 Image = Sequence.get(Direction-37);
-                if(!CheckCollision){
+                if(!CheckWallCollision){
                     if(isKeyPressed){
                         Direction = ArrowKeyQueue;
                         move();
@@ -147,7 +149,7 @@ public class Wizard extends Entity {
 //             //             Fireballs.get(i).IsActive = true;
 //             //             Fireballs.get(i).x = Wizard.x;
 //             //             Fireballs.get(i).y = Wizard.y;
-//             //             Fireballs.get(i).direction = Wizard.FacingDirection;
+//             //             Fireballs.get(i).Direction = Wizard.FacingDirection;
 //             //             Fireballs.get(i).Lifetime = 200;
 //             //             break;
 //             //         }

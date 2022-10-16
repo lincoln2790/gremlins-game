@@ -3,27 +3,34 @@ package gremlins;
 import processing.core.PImage;
 
 public class Fireball extends Entity {
-    int direction;
-    int VELOCITY = 8;
+
+    int VELOCITY = 5;
     int Lifetime;
+    
     Fireball(int x, int y, PImage Image){
         super(x,y);
         this.Image = Image;
-        this.isAlive = false;
+        this.IsAlive = false;
         this.Lifetime = 0;
-        this.direction = 39;
+        this.Direction = 37;
+        this.type = 'F';
         
     }
-    void tick(){
-        if(Lifetime == 0){
-            isAlive = false;
+    void tick(boolean CheckCollision){
+        if(!CheckCollision){
+            move();
+            if(Lifetime == 0){
+                IsAlive = false;
+            }
+            Lifetime--; 
+        } else {
+            IsAlive = false;
         }
-        Lifetime--;
-        move();
+        
     }
     void move(){
-        x += h.get(direction).get(0);
-        y += h.get(direction).get(1);
+        x += h.get(Direction).get(0);
+        y += h.get(Direction).get(1);
 
     }
 }

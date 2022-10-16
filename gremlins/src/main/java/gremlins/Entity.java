@@ -15,13 +15,18 @@ public class Entity {
         int Direction;
         int cooldown, cooldownTimer;
         PImage Image;
-        boolean isAlive;
+        boolean IsAlive;
+        char type;
+        int startX, startY;
+        
         Map<Integer, ArrayList<Integer>> h = new HashMap<Integer, ArrayList<Integer>>();
         Entity(int x,int y){
             this.x=x;
             this.y = y;
+            this.startX = x;
+            this.startY = y;    
             this.Image = null;
-            this.isAlive = false;
+            this.IsAlive = false;
             ArrayList<Integer> L = new ArrayList<Integer>(Arrays.asList(-1,0,0));
             ArrayList<Integer> R = new ArrayList<Integer>(Arrays.asList(1,0,1));
             ArrayList<Integer> U = new ArrayList<Integer>(Arrays.asList(0,-1,2));
