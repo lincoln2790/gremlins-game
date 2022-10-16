@@ -1,12 +1,13 @@
 package gremlins;
 import processing.core.PImage;
 import processing.core.PApplet;
-public class Exit extends Tile{
+public class Exit extends Entity{
     public
         Exit(int x, int y, PImage Image){
             super(x, y);
             this.Image = Image;
-            this.IsActive = true;
+            this.IsAlive = true;
+            this.type = 'E';
         }
 
 

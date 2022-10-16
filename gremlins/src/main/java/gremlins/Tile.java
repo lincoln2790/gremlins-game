@@ -17,7 +17,7 @@ public class Tile {
             
             this.IsActive = false;
             this.IsDestructible = false;
-            this.TileType = 'E';
+            this.TileType = 'T';
             this.Sequence = null;
             this.Image = null;
 

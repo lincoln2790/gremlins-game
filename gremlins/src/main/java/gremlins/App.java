@@ -21,7 +21,8 @@ public class App extends PApplet {
     public static final int NUM_COLS = 36;
     public int keyCode;
     public int keysPressed[] = {0,0,0,0};
-
+    boolean GameOver  = false;
+    boolean GameWin  = false;
     public static final Random randomGenerator = new Random();
     public String configPath;
 
@@ -91,7 +92,8 @@ public class App extends PApplet {
                                 t = new BrickWall(col*20,row*20, BrickwallImgs);
                                 break;
                             case 'E':
-                                t = new Exit(col*20,row*20,ExitImg);
+                                Entity e = new Exit(col*20,row*20,ExitImg);
+                                Levels.get(i).Exit = e;
                                 break;
                             case 'W':
                                 Wizard w = new Wizard(col*20,row*20, WizardImgs, l.WizardCooldown);
@@ -117,8 +119,24 @@ public class App extends PApplet {
     }
 
     public void draw() {
-        Level l = Levels.get(currentLevel);
         this.background(192,156,124);
+        if(GameOver){
+            textSize(40);
+            fill(255,255,255);
+            text("GAME OVER!",NUM_COLS*7, NUM_COLS*10);
+            return;
+        }
+        if(GameWin){
+            textSize(40);
+            fill(255,255,255);
+            text("YOU WIN!",NUM_COLS*7, NUM_COLS*10);
+            return;
+        }
+
+        Level l = Levels.get(currentLevel);
+        System.out.println(currentLevel);
+        this.background(192,156,124);
+        
         // this.text()
         textSize(17);
         fill(255,255,255);
@@ -141,7 +159,7 @@ public class App extends PApplet {
         }
 
         this.image(l.Wizard.Image, l.Wizard.x, l.Wizard.y);
-        
+        this.image(l.Exit.Image, l.Exit.x, l.Exit.y);
 
         for(int row = 0; row<NUM_ROWS;row++){
             for(int col = 0; col<NUM_COLS;col++){
@@ -152,12 +170,7 @@ public class App extends PApplet {
                 if(t.Image != null){
                     this.image(t.Image, t.x, t.y);
                 }
-                // if(( t.Image != null & t.TileType == 'B') | (t.TileType != 'B' & t.IsActive)){
-                    
-                // } else if (t.TileType == 'B' & t.IsActive && t.AnimationIndex <20 ){
-                //     this.image(t.Image, t.x, t.y);
-                // }    
-                
+
             }
         }
 
@@ -181,13 +194,22 @@ public class App extends PApplet {
             }   
         }    
         l.Wizard.tick(CheckEntityWallCollision(l.Wizard));
+        if(CheckEntitiesCollision(l.Wizard, l.Exit)){
+            currentLevel++;
+            if(currentLevel + 1 > Levels.size()){
+                GameWin = true;
+                return;
+            }
+        };
+    
         for(Gremlin g: l.Gremlins){
             if(g.IsAlive){
                 this.image(g.Image,g.x, g.y);
                 g.tick(CheckEntityWallCollision(g));
                 if(CheckEntitiesCollision(g, l.Wizard)){
-                    l.Wizard.Lives--;
+                    
                     reset();
+                    
                 }
                 
             }  
@@ -249,7 +271,12 @@ public class App extends PApplet {
 
     }
     public void reset(){
+        
         Level l = Levels.get(currentLevel);
+        l.Wizard.Lives--;
+        if (l.Wizard.Lives == 0){
+            GameOver = true;
+        }
         l.Wizard.x = l.Wizard.startX;
         l.Wizard.y = l.Wizard.startY;
         for(int row = 0; row<NUM_ROWS;row++){
@@ -298,7 +325,7 @@ public class App extends PApplet {
             for(int col = 0;col<NUM_COLS;col++){
                 Tile t = l.Tiles.get(row).get(col);
 
-                if(t.TileType != 'E' && t.IsActive){
+                if(t.TileType != 'T' && t.IsActive){
                     if(e1.Direction == LEFT && e1.x == t.x+20 && e1.y == t.y) Collision = true;
                     if(e1.Direction == UP && e1.x == t.x && e1.y == t.y+20) Collision = true;
                     if(e1.Direction == RIGHT && e1.x == t.x-20 && e1.y == t.y) Collision = true;
@@ -319,6 +346,10 @@ public class App extends PApplet {
                     }
                     break outerloop;
                     
+                }
+                if(Collision && e1.type == 'W' && t.TileType == 'E'){
+
+                    break outerloop;
                 }
                 
             }

@@ -8,6 +8,7 @@ class Level{
         float WizardCooldown;
         float EnemyCooldown;
         Wizard Wizard;
+        Entity Exit;
         public static final int MAX_FIREBALLS = 5;
         ArrayList< Fireball > Fireballs  = new ArrayList<Fireball >();
         ArrayList<ArrayList<Tile>> Tiles = new ArrayList< ArrayList<Tile> >();
