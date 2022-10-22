@@ -5,13 +5,11 @@ import processing.core.PImage;
 public class Fireball extends Entity {
 
     int VELOCITY = 5;
-    int Lifetime;
     
     Fireball(int x, int y, PImage Image){
         super(x,y);
         this.Image = Image;
         this.IsAlive = false;
-        this.Lifetime = 0;
         this.Direction = 37;
         this.type = 'F';
         
@@ -19,10 +17,8 @@ public class Fireball extends Entity {
     void tick(boolean CheckCollision){
         if(!CheckCollision){
             move();
-            if(Lifetime == 0){
-                IsAlive = false;
-            }
-            Lifetime--; 
+            
+
         } else {
             IsAlive = false;
         }

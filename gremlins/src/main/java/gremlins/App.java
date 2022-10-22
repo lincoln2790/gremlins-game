@@ -101,6 +101,9 @@ public class App extends PApplet {
                                 break;
                             case 'G':
                                 Gremlin g = new Gremlin(col*20,row*20, GremlinImg, l.EnemyCooldown);
+                                for(int it = 0; it< Level.MAX_FIREBALLS;it++){
+                                    g.Slimeballs.add(new Fireball(0, 0, ExitImg));
+                                }
                                 Levels.get(i).Gremlins.add(g);
                                 break;
                         }
@@ -119,6 +122,7 @@ public class App extends PApplet {
     }
 
     public void draw() {
+
         this.background(192,156,124);
         if(GameOver){
             textSize(40);
@@ -134,7 +138,8 @@ public class App extends PApplet {
         }
 
         Level l = Levels.get(currentLevel);
-        System.out.println(currentLevel);
+        l.EnemyCooldownTimer--;
+        
         this.background(192,156,124);
         
         // this.text()
@@ -201,16 +206,46 @@ public class App extends PApplet {
                 return;
             }
         };
-    
+        l.EnemyCooldownTimer--;
         for(Gremlin g: l.Gremlins){
             if(g.IsAlive){
                 this.image(g.Image,g.x, g.y);
                 g.tick(CheckEntityWallCollision(g));
                 if(CheckEntitiesCollision(g, l.Wizard)){
-                    
                     reset();
-                    
                 }
+                
+                // for(int i = 0; i<Level.MAX_FIREBALLS;i++){
+                    
+                if(l.EnemyCooldownTimer >0){
+                    for(int i = 0; i<Level.MAX_FIREBALLS;i++){
+                        if(g.Slimeballs.get(i).IsAlive){
+                            for(int j =0;j<g.Slimeballs.get(i).VELOCITY;j++){
+                                g.Slimeballs.get(i).tick(CheckEntityWallCollision(g.Slimeballs.get(i)));
+                                this.image(g.Slimeballs.get(i).Image,g.Slimeballs.get(i).x, g.Slimeballs.get(i).y);
+                            }
+                        }
+                        
+                    }
+
+                }else {
+                    for(int i = 0; i<Level.MAX_FIREBALLS;i++){
+                        if(!g.Slimeballs.get(i).IsAlive){
+                            g.Slimeballs.get(i).IsAlive = true;
+                            g.Slimeballs.get(i).x = g.x;
+                            g.Slimeballs.get(i).y = g.y;
+                            g.Slimeballs.get(i).Direction = g.Direction;
+                            break;
+                        }
+                        
+                    }
+                }  
+                    
+                
+                if(l.EnemyCooldownTimer<0){
+                    l.EnemyCooldownTimer =50;
+                }
+                
                 
             }  
         }
@@ -240,7 +275,6 @@ public class App extends PApplet {
                         l.Fireballs.get(i).x = l.Wizard.x;
                         l.Fireballs.get(i).y = l.Wizard.y;
                         l.Fireballs.get(i).Direction = l.Wizard.Direction;
-                        l.Fireballs.get(i).Lifetime = 2000;
                         l.Wizard.cooldownTimer = l.Wizard.cooldown;
                         break;
                     }
@@ -262,13 +296,6 @@ public class App extends PApplet {
         if(totalKeysPressed ==0){
             Levels.get(currentLevel).Wizard.isKeyPressed = false;
         }
-        
-        // if(keyCode == 32){
-
-        // } else if(keyCode >=37 && keyCode<=40){
-        //     Levels.get(currentLevel-1).Wizard.isKeyPressed = false;
-        // }
-
     }
     public void reset(){
         
@@ -360,99 +387,5 @@ public class App extends PApplet {
         return Collision;
     }
 
-
-
-    
-    // public void CheckFireBallCollision(){
-
-    // }
-    // boolean CheckEntityCollision(Entity e){
-    //     return false;
-    // }
-    // public void CheckFireBallCollision(){
-    //     Level l = Levels.get(currentLevel);
-    //     boolean Collision = false;
-    //     outerloop:
-    //     for(int row = 0;row<NUM_ROWS;row++){
-    //         for(int col = 0;col<NUM_COLS;col++){
-    //             Tile t = l.Tiles.get(row).get(col);
-                
-    //             for(Fireball f:l.Fireballs){
-    //                 if(f.IsAlive && t.IsActive){
-    //                     if(f.Direction == LEFT && f.x == t.x+20 && f.y == t.y) Collision = true;
-    //                     if(f.Direction == UP && f.x == t.x && f.y == t.y+20) Collision = true;
-    //                     if(f.Direction == RIGHT && f.x == t.x-20 && f.y == t.y) Collision = true;
-    //                     if(f.Direction == DOWN && f.x == t.x && f.y == t.y-20) Collision = true;
-    //                     if(f.x == t.x && f.y == t.y) Collision = true;
-
-    //                     if(Collision){
-    //                         switch(t.TileType){
-    //                             case 'B': 
-    //                                 f.IsAlive = false;
-    //                                 t.IsActive= false;
-    //                                 break;
-    //                             case 'S': 
-    //                                 f.IsAlive = false;
-    //                                 // t.IsActive= false;
-    //                                 break;
-    //                         }
-    //                         break outerloop;
-    //                     }
-                        
-                            
-    //                 }
-    //             }
-    //         }
-    //     }
-        
-    //     Collision = false;
-    //     outerloop:
-    //     for(Gremlin g: l.Gremlins){
-    //         for(Fireball f:l.Fireballs){
-    //             if(f.Direction == LEFT && f.x == g.x+20 && f.y == g.y) Collision = true;
-    //             if(f.Direction == UP && f.x == g.x && f.y == g.y+20) Collision = true;
-    //             if(f.Direction == RIGHT && f.x == g.x-20 && f.y == g.y) Collision = true;
-    //             if(f.Direction == DOWN && f.x == g.x && f.y == g.y-20) Collision = true;
-    //             if(f.x == g.x && f.y == g.y) Collision = true;
-    //             if(Collision){
-    //                 g.IsAlive = false;
-    //                 f.IsAlive= false;
-    //                 break outerloop;
-    //             }
-    //         }
-            
-    //     }
-    //     // return Collision;
-        
-    // }
-    // boolean CheckEntityCollision(Entity e){
-    //     Level l = Levels.get(currentLevel);
-    //     boolean Collision = false;
-    //     if(e.isGridLocked()){
-    //         outerloop:
-    //         for(int row = 0;row<NUM_ROWS;row++){
-    //             for(int col = 0;col<NUM_COLS;col++){
-    //                 Tile t = l.Tiles.get(row).get(col);
-    //                 if(t.IsActive){
-        
-    //                     if(e.Direction == LEFT && e.x == t.x+20 && e.y == t.y) Collision = true;
-    //                     if(e.Direction  == UP && e.x == t.x && e.y == t.y+20) Collision = true;
-    //                     if(e.Direction  == RIGHT && e.x == t.x-20 && e.y == t.y) Collision = true;
-    //                     if(e.Direction  == DOWN && e.x == t.x && e.y == t.y-20) Collision = true;
-                    
-    //                 }
-    //                 if(Collision){
-    //                     // l.Wizard.isMoving = false;
-    //                     break outerloop;
-    //                 }
-    //             }
-    //         }
-    //     }
-        
-        
-    //     return Collision;
-
-    // }
-    
 }
 

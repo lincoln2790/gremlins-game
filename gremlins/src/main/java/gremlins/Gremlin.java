@@ -11,10 +11,10 @@ public class Gremlin extends Entity {
         int VELOCITY=1;
         Random rand = new Random();
         char type = 'G';
+        ArrayList< Fireball > Slimeballs  = new ArrayList<Fireball >();
         Gremlin(int x, int y, PImage Image, float cooldown){
             super(x, y);
             this.Image = Image;
-            this.cooldown = (int)cooldown;
             this.Direction = rand.nextInt(4)+37;
             this.IsAlive = true;
         }
