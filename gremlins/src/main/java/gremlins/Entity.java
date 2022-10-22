@@ -36,6 +36,7 @@ public class Entity {
             h.put(UP,U);
             h.put(RIGHT,R);
             h.put(DOWN,D);
+            this.Direction = 37;
         }
         boolean isGridLocked(){
             return (x%20 == 0 && y%20 == 0);
@@ -46,4 +47,5 @@ public class Entity {
                 y += h.get(Direction).get(1);
             }
         }
+
 }

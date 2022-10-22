@@ -7,15 +7,16 @@ import java.util.Random;
 public class Gremlin extends Entity {
     public
         Random rand = new Random();
-        ArrayList< Fireball > Slimeballs  = new ArrayList<Fireball >();
+        ArrayList< Slimeball > Slimeballs  = new ArrayList<Slimeball >();
 
         Gremlin(int x, int y, PImage Image, float cooldown){
             super(x, y);
             this.Image = Image;
             this.Direction = rand.nextInt(4)+37;
             this.IsAlive = true;
-            this.VELOCITY=1;
+            this.VELOCITY=2;
             this.type = 'G';
+            this.cooldown = (int)cooldown*60;
         }
 
         public void tick(boolean CheckCollision){

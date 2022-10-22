@@ -5,12 +5,13 @@ import processing.core.PImage;
 public class Fireball extends Entity {
 
     int VELOCITY = 5;
-    
-    Fireball(int x, int y, PImage Image){
+    PImage powerImage,bigBoomImage;
+    Fireball(int x, int y, PImage Image,PImage powerImage){
         super(x,y);
         this.Image = Image;
+        this.powerImage = powerImage;
+        this.bigBoomImage = powerImage;
         this.IsAlive = false;
-        this.Direction = 37;
         this.type = 'F';
         
     }

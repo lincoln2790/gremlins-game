@@ -23,10 +23,12 @@ public class App extends PApplet {
     private ArrayList<Level> Levels = new ArrayList<Level>();
     private int keyCode;
     private int keysPressed[] = {0,0,0,0};
+    boolean spaceHeld;
     private boolean GameOver  = false;
     private boolean GameWin  = false;
     private int currentLevel = 0;
-
+    
+    Random rand = new Random();
     private static final String WizardImgStrs[] = {"wizard0.png","wizard2.png","wizard1.png","wizard3.png","fireball.png"};
     private static final String BrickwallImgStrs[] = {"brickwall.png", "brickwall_destroyed0.png","brickwall_destroyed1.png","brickwall_destroyed2.png","brickwall_destroyed3.png"};
     public App() {
@@ -52,10 +54,13 @@ public class App extends PApplet {
         // Loading all other images
         PImage StonewallImg = loadImage(this.getClass().getResource("stonewall.png").getPath().replace("%20", ""));
         PImage GremlinImg = loadImage(this.getClass().getResource("gremlin.png").getPath().replace("%20", ""));
-        PImage ExitImg = loadImage(this.getClass().getResource("slime.png").getPath().replace("%20", ""));
+        PImage ExitImg = loadImage(this.getClass().getResource("exit.png").getPath().replace("%20", ""));
+        PImage SlimeImg = loadImage(this.getClass().getResource("slime.png").getPath().replace("%20", ""));
         PImage FireballImg = loadImage(this.getClass().getResource("fireball.png").getPath().replace("%20", ""));
+        PImage blueFireballImg = loadImage(this.getClass().getResource("blueFire.png").getPath().replace("%20", ""));
         
-        
+        PImage BurgerImg = loadImage(this.getClass().getResource("burger.png").getPath().replace("%20", ""));
+
         JSONObject conf = loadJSONObject(new File(this.configPath));
         for(int i = 0; i< conf.getJSONArray("levels").size();i++){
             JSONObject level = conf.getJSONArray("levels").getJSONObject(i);
@@ -64,8 +69,9 @@ public class App extends PApplet {
             Float  enemyCooldown = level.getFloat("enemy_cooldown");
             Level levelObj = new Level(levelStr);
             for(int f = 0; f< Level.MAX_FIREBALLS;f++){
-                levelObj.Fireballs.add(new Fireball(0, 0, FireballImg));
+                levelObj.Fireballs.add(new Fireball(0, 0, FireballImg,blueFireballImg));
             }
+            levelObj.Burger = new Power(-SPRITESIZE,-SPRITESIZE,BurgerImg);
             Levels.add(levelObj);
 
             File f = new File(levelStr);
@@ -96,7 +102,7 @@ public class App extends PApplet {
                             case 'G':
                                 Gremlin g = new Gremlin(col*SPRITESIZE,row*SPRITESIZE, GremlinImg, enemyCooldown);
                                 for(int it = 0; it< Level.MAX_FIREBALLS;it++){
-                                    g.Slimeballs.add(new Fireball(0, 0, ExitImg));
+                                    g.Slimeballs.add(new Slimeball(0, 0, SlimeImg));
                                 }
                                 Levels.get(i).Gremlins.add(g);
                                 break;
@@ -177,17 +183,40 @@ public class App extends PApplet {
 
             }
         }
+        
 
         // Fireballs drawn
         for(Fireball f: l.Fireballs){
+
             if(f.IsAlive){
-                this.image(f.Image, f.x, f.y);
-                for(int i = 0; i<f.VELOCITY;i++){
-                    f.tick(CheckEntityWallCollision(f));
+                if(l.Wizard.PowerActive){
+                    this.image(f.powerImage, f.x, f.y);
+                }else {
+                    this.image(f.Image, f.x, f.y);
                 }
+                
+                for(int i = 0; i<f.VELOCITY;i++){
+                    boolean  ni = CheckEntityWallCollision(f);
+
+                    f.tick(ni);
+                
+                }
+
                 for(Gremlin g: l.Gremlins){
                     if(g.IsAlive && CheckEntitiesCollision(f, g)){
-                        g.IsAlive = false;
+  
+                        boolean whileCond = true;
+                        while(whileCond){
+                            int randX = rand.nextInt(NUM_COLS);
+                            int randY = rand.nextInt(NUM_ROWS);
+                            Tile t = l.Tiles.get(randY).get(randX);
+                            if(!t.IsActive && abs(l.Wizard.x - randX*SPRITESIZE)> 10*SPRITESIZE && abs(l.Wizard.y - randY*SPRITESIZE)> 10*SPRITESIZE){
+                                g.x = randX*SPRITESIZE;
+                                g.y= randY*SPRITESIZE;
+                                whileCond=false;
+                            }
+                            
+                        }
                         f.IsAlive= false;
                     }   
                 }
@@ -206,6 +235,18 @@ public class App extends PApplet {
                 if(l.EnemyCooldownTimer >0){
                     for(int i = 0; i<Level.MAX_FIREBALLS;i++){
                         if(g.Slimeballs.get(i).IsAlive){
+                            if(CheckEntitiesCollision(g.Slimeballs.get(i), l.Wizard)){
+                                reset();
+                                return;
+                            }
+                            for(int j =0; j<Level.MAX_FIREBALLS;j++){
+                                if(CheckEntitiesCollision(g.Slimeballs.get(i), l.Fireballs.get(j))){
+                                    g.Slimeballs.get(i).IsAlive = false;
+                                    l.Fireballs.get(j).IsAlive = false;
+                                    return;
+                                }
+                            }
+                            
                             for(int j = 0;j<g.Slimeballs.get(i).VELOCITY;j++){
                                 g.Slimeballs.get(i).tick(CheckEntityWallCollision(g.Slimeballs.get(i)));
                                 this.image(g.Slimeballs.get(i).Image,g.Slimeballs.get(i).x, g.Slimeballs.get(i).y);
@@ -226,15 +267,51 @@ public class App extends PApplet {
                     }
                 }  
                 if(l.EnemyCooldownTimer<0){
-                    l.EnemyCooldownTimer =50;
+                    l.EnemyCooldownTimer = g.cooldown;
                 }
             }  
         }
+        
         l.EnemyCooldownTimer--;
+        l.BurgerTimer--;
+        if(!l.Burger.IsAlive&& l.BurgerTimer<=0){
+            l.Burger.IsAlive = true;
+
+        }
+        if(l.Burger.IsAlive){
+            this.image(l.Burger.Image,l.Burger.x,l.Burger.y);
+            boolean whileCond = true;
+            if(CheckEntitiesCollision(l.Burger, l.Wizard)){
+                l.Burger.IsAlive = false;
+                l.Wizard.PowerActive = true;
+            }
+            if(l.BurgerTimer<=0){
+                while(whileCond){
+                    
+                    int randX = rand.nextInt(NUM_COLS);
+                    int randY = rand.nextInt(NUM_ROWS);
+                    Tile t = l.Tiles.get(randY).get(randX);
+                    if(!t.IsActive){
+                        l.Burger.x = randX*SPRITESIZE;
+                        l.Burger.y= randY*SPRITESIZE;
+                        whileCond=false;
+                        l.BurgerTimer = 60*15;
+                    }
+                }
+            }
+        }
+        if(!l.Burger.IsAlive){
+            l.BurgerTimer = 60*15;
+        }
+        
+        
     }    
+
+
 
     // Key event triggered when any key is pressed
     public void keyPressed(KeyEvent e) {
+        if(GameOver) return;
         keyCode = e.getKeyCode();
         Level l =  Levels.get(currentLevel);
 
@@ -249,15 +326,20 @@ public class App extends PApplet {
         if(l.Wizard.isGridLocked()){
             l.Wizard.Direction = l.Wizard.ArrowKeyQueue;
         }
-        if(keyCode == 32){
+        if(keyCode == 32 ||spaceHeld){
+            spaceHeld = true;
             if(l.Wizard.cooldownTimer <= 0){
-                for(int i = 0; i<5;i++){
+                for(int i = 0; i<Level.MAX_FIREBALLS;i++){
                     if(!l.Fireballs.get(i).IsAlive){
                         l.Fireballs.get(i).IsAlive = true;
                         l.Fireballs.get(i).x = l.Wizard.x;
                         l.Fireballs.get(i).y = l.Wizard.y;
                         l.Fireballs.get(i).Direction = l.Wizard.Direction;
                         l.Wizard.cooldownTimer = l.Wizard.cooldown;
+                        // if(true){
+                        //     l.Wizard.cooldownTimer = 0;
+                        //     l.Fireballs.get(i).Direction = rand.nextInt(4)+37;
+                        // }
                         break;
                     }
                 }
@@ -269,7 +351,7 @@ public class App extends PApplet {
     public void keyReleased(KeyEvent e){
         keyCode = e.getKeyCode();
         if(keyCode >=37 && keyCode<=40){
-            keysPressed[keyCode-37] = 1;
+            keysPressed[keyCode-37] = 0;
         }
         int totalKeysPressed = 0;
         for(int i = 0;i<4;i++){
@@ -277,6 +359,9 @@ public class App extends PApplet {
         }
         if(totalKeysPressed ==0){
             Levels.get(currentLevel).Wizard.isKeyPressed = false;
+        }
+        if(keyCode == 32){
+            spaceHeld = false;
         }
     }
 
@@ -330,11 +415,18 @@ public class App extends PApplet {
             for(int col = 0;col<NUM_COLS;col++){
                 Tile t = l.Tiles.get(row).get(col);
                 if(t.TileType != 'T' && t.IsActive){
+                    // if(e1.x < t.x + SPRITESIZE &&
+                    //     e1.x + SPRITESIZE > t.x &&
+                    //     e1.y < t.y + SPRITESIZE &&
+                    //     SPRITESIZE + e1.y > t.y){
+                    //         Collision = true; 
+                    // }
                     if(e1.Direction == LEFT && e1.x == t.x+SPRITESIZE && e1.y == t.y) Collision = true;
                     if(e1.Direction == UP && e1.x == t.x && e1.y == t.y+SPRITESIZE) Collision = true;
                     if(e1.Direction == RIGHT && e1.x == t.x-SPRITESIZE && e1.y == t.y) Collision = true;
                     if(e1.Direction == DOWN && e1.x == t.x && e1.y == t.y-SPRITESIZE) Collision = true;
                 }       
+                
 
                 if(Collision && e1.type == 'F'){
                     switch(t.TileType){
@@ -346,6 +438,18 @@ public class App extends PApplet {
                             e1.IsAlive = false;
                             break;
                     }
+                    if(l.Wizard.PowerActive){
+                        for(int i = 0;i<14;i++){
+                            try{
+                                if(l.Tiles.get(row+l.BlueFireMatrix[i][0]).get(col+l.BlueFireMatrix[i][1]).TileType == 'B'){
+                                    l.Tiles.get(row+l.BlueFireMatrix[i][0]).get(col+l.BlueFireMatrix[i][1]).IsActive = false;
+                                }
+                            }catch(ArrayIndexOutOfBoundsException e){
+                            }catch(IndexOutOfBoundsException e){}
+                    
+                        }
+                    }
+                    
                     break outerloop;
                 }
                 if(Collision && e1.type == 'W' && t.TileType == 'E'){

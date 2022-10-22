@@ -16,14 +16,13 @@ public class Wizard extends Entity {
         int ArrowKeyQueue;
         char type = 'W';
         int Lives;
-        
+        boolean PowerActive = false;
 
         Wizard(int x, int y, ArrayList<PImage> Sequence, float cooldown){
             super(x, y);
             this.Sequence = Sequence;
             this.Image = Sequence.get(0);
             this.ArrowKeyQueue = 39;
-            this.Direction = 37;
             this.isMoving = false;
             this.isKeyPressed = false;
             this.IsAlive = true;
@@ -50,9 +49,7 @@ public class Wizard extends Entity {
             }
         }
         
-        boolean isGridLocked(){
-            return (x%20 == 0 && y%20 == 0);
-        }
+        
         boolean ArrowKeyPressed(){
             return (Direction >=37 && Direction<=40);
         }
