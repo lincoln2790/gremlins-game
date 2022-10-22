@@ -1,23 +1,23 @@
 package gremlins;
 import processing.core.PImage;
-
 import java.util.ArrayList;
 import java.util.Random;
 
 
 public class Gremlin extends Entity {
     public
-        PImage Image;
-        int VELOCITY=1;
         Random rand = new Random();
-        char type = 'G';
         ArrayList< Fireball > Slimeballs  = new ArrayList<Fireball >();
+
         Gremlin(int x, int y, PImage Image, float cooldown){
             super(x, y);
             this.Image = Image;
             this.Direction = rand.nextInt(4)+37;
             this.IsAlive = true;
+            this.VELOCITY=1;
+            this.type = 'G';
         }
+
         public void tick(boolean CheckCollision){
             if(!CheckCollision){
                 move();
@@ -25,12 +25,5 @@ public class Gremlin extends Entity {
                 Direction = rand.nextInt(4)+37;
             }
         }
-        void move(){
-            if(Direction != 0){
-                x += VELOCITY*h.get(Direction).get(0);
-                y += VELOCITY*h.get(Direction).get(1);
 
-            }
-            
-        }
 }

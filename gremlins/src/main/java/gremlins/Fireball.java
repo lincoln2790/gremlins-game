@@ -17,16 +17,10 @@ public class Fireball extends Entity {
     void tick(boolean CheckCollision){
         if(!CheckCollision){
             move();
-            
-
         } else {
             IsAlive = false;
         }
         
     }
-    void move(){
-        x += h.get(Direction).get(0);
-        y += h.get(Direction).get(1);
 
-    }
 }

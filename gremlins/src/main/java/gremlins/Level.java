@@ -4,21 +4,18 @@ import java.util.ArrayList;
 import processing.core.PImage;
 class Level{
     public
+        static final int MAX_FIREBALLS = 5;
         String Layout;
-        float WizardCooldown;
-        float EnemyCooldown;
         int EnemyCooldownTimer;
         Wizard Wizard;
         Entity Exit;
-        public static final int MAX_FIREBALLS = 5;
-        ArrayList< Fireball > Fireballs  = new ArrayList<Fireball >();
 
+        
+        ArrayList< Fireball > Fireballs  = new ArrayList<Fireball >();
         ArrayList<ArrayList<Tile>> Tiles = new ArrayList< ArrayList<Tile> >();
         ArrayList<Gremlin> Gremlins = new ArrayList<Gremlin  >();
 
-        Level(String Layout, float WizardCooldown, float EnemyCooldown){
+        Level(String Layout){
             this.Layout= Layout;
-            this.WizardCooldown= WizardCooldown;
-            this.EnemyCooldown = EnemyCooldown;
         }
 };

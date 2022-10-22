@@ -10,9 +10,6 @@ import java.util.Map;
 
 public class Wizard extends Entity {
     public
-        
-        static final int VELOCITY = 4;
-       
         ArrayList< PImage > Sequence;
         boolean isMoving;
         boolean isKeyPressed;
@@ -27,8 +24,6 @@ public class Wizard extends Entity {
             this.Image = Sequence.get(0);
             this.ArrowKeyQueue = 39;
             this.Direction = 37;
-            this.Lives = 3;
-
             this.isMoving = false;
             this.isKeyPressed = false;
             this.IsAlive = true;
@@ -54,18 +49,7 @@ public class Wizard extends Entity {
                 isMoving = true;
             }
         }
-            // }
-            
-
         
-        void move(){
-            if(Direction != 0){
-                x += VELOCITY*h.get(Direction).get(0);
-                y += VELOCITY*h.get(Direction).get(1);
-
-            }
-            
-        }
         boolean isGridLocked(){
             return (x%20 == 0 && y%20 == 0);
         }

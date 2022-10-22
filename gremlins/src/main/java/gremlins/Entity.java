@@ -18,6 +18,7 @@ public class Entity {
         boolean IsAlive;
         char type;
         int startX, startY;
+        int VELOCITY;
         
         Map<Integer, ArrayList<Integer>> h = new HashMap<Integer, ArrayList<Integer>>();
         Entity(int x,int y){
@@ -38,5 +39,11 @@ public class Entity {
         }
         boolean isGridLocked(){
             return (x%20 == 0 && y%20 == 0);
+        }
+        void move(){
+            if(Direction != 0){
+                x += h.get(Direction).get(0);
+                y += h.get(Direction).get(1);
+            }
         }
 }
