@@ -4,7 +4,7 @@ import processing.core.PImage;
 
 public class Fireball extends Entity {
 
-    int VELOCITY = 5;
+    int VELOCITY = 4;
     PImage powerImage,bigBoomImage;
     Fireball(int x, int y, PImage Image,PImage powerImage){
         super(x,y);

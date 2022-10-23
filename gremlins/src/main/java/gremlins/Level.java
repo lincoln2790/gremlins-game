@@ -10,7 +10,7 @@ class Level{
         Wizard Wizard;
         Entity Exit;
         Power Burger;
-        int BurgerTimer = 60*10;
+        int BurgerTimer = 0;
         int BlueFireMatrix[][] = {
                     {0,-2},
             {-1,-1},{0,-1},{1,-1},

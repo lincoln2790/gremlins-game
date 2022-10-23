@@ -14,7 +14,7 @@ public class Gremlin extends Entity {
             this.Image = Image;
             this.Direction = rand.nextInt(4)+37;
             this.IsAlive = true;
-            this.VELOCITY=2;
+            this.VELOCITY=1;
             this.type = 'G';
             this.cooldown = (int)cooldown*60;
         }
